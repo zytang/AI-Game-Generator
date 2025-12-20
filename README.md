@@ -10,7 +10,7 @@ The system uses FastAPI (Python) for the backend and Google Gemini (free tier) f
 The generated games run directly in the browser with no external libraries, no setup, and no dependencies.
 
 ## 🚀Project Overview
-
+**Check it Out:** [AI Game Generator🔗](https://ai-game-generator-yiw2.onrender.com)
 ### Objective
 
 - User provides a short educational game idea (e.g., math game for kids)
