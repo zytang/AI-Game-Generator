@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>AI Game Generator</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+
+    <h1>AI Educational Game Generator</h1>
+
+    <p>Enter a short description of the educational game you want to generate.</p>
+
+    <textarea id="promptInput" placeholder="Example: Create a kid-friendly math addition game for ages 6–8 with five questions and a score counter."></textarea>
+
+    <br><br>
+
+    <button onclick="generateGame()">Generate Game</button>
+
+    <p id="status"></p>
+
+    <div id="playSection" style="display:none;">
+        <button onclick="playGame()">▶ Play Game</button>
+    </div>
+
+    <script>
+        let generatedGameUrl = "";
+
+        async function generateGame() {
+            const prompt = document.getElementById("promptInput").value;
+            const status = document.getElementById("status");
+            const playSection = document.getElementById("playSection");
+
+            if (!prompt.trim()) {
+                alert("Please enter a game prompt.");
+                return;
+            }
+
+            status.textContent = "Generating game...";
+            playSection.style.display = "none";
+
+            try {
+                const response = await fetch("/generate-game", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({ prompt })
+                });
+
+                const data = await response.json();
+
+                if (!response.ok) {
+                    throw new Error(data.detail || "Generation failed");
+                }
+
+                generatedGameUrl = data.game_url;
+                status.textContent = "Game generated successfully!";
+                playSection.style.display = "block";
+
+            } catch (error) {
+                status.textContent = "Error generating game.";
+                console.error(error);
+            }
+        }
+
+        function playGame() {
+            if (generatedGameUrl) {
+                window.open(generatedGameUrl + "?t=" + Date.now(), "_blank");
+            }
+        }
+    </script>
+
+</body>
+</html>
