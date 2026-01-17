@@ -56,8 +56,21 @@ class GameRequest(BaseModel):
 
 @app.get("/", response_class=HTMLResponse)
 def read_root():
-    with open(os.path.join(BASE_DIR, "static", "index.html"), "r", encoding="utf-8") as f:
-        return f.read()
+    # In Vercel, the file structure might be flattened or different.
+    # We should rely on standard relative paths from the project root.
+    index_path = os.path.join(BASE_DIR, "static", "index.html")
+    if not os.path.exists(index_path):
+        # Fallback for some serverless structures
+        index_path = "static/index.html"
+    
+    try:
+        with open(index_path, "r", encoding="utf-8") as f:
+            return f.read()
+    except FileNotFoundError:
+        return """
+        <h1>AI Game Generator</h1>
+        <p>Frontend file not found. Please ensure static/index.html exists.</p>
+        """
 
 
 from backend.kv_client import kv_client
