@@ -92,15 +92,28 @@
                 const fullUrl = `${origin}${gamePath}`;
 
                 const qrContainer = document.getElementById("qrcode");
-                qrContainer.innerHTML = "";
-                new QRCode(qrContainer, {
-                    text: fullUrl,
-                    width: 160,
-                    height: 160,
-                    colorDark: "#ffffff",
-                    colorLight: "transparent",
-                    correctLevel: QRCode.CorrectLevel.H
-                });
+                qrContainer.innerHTML = ""; // Clear previous
+
+                // Debug log
+                console.log("Generating QR for:", fullUrl);
+
+                // Small delay to ensure container is rendered
+                setTimeout(() => {
+                    try {
+                        new QRCode(qrContainer, {
+                            text: fullUrl,
+                            width: 160,
+                            height: 160,
+                            colorDark: "#ffffff",
+                            colorLight: "#000000", /* Changed to black background for better contrast if transparent fails? No, keep transparent but ensure colorDark is visible */
+                            colorLight: "transparent",
+                            correctLevel: QRCode.CorrectLevel.M // Lower correction level makes it less dense/easier to scan
+                        });
+                    } catch (e) {
+                        console.error("QR Code generation error:", e);
+                        qrContainer.textContent = "Error generating QR code";
+                    }
+                }, 100);
 
                 // Success State
                 status.textContent = "Your world has been created!";
