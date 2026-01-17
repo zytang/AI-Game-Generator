@@ -25,7 +25,7 @@ Your task is to generate a COMPLETE, VALID, SELF-CONTAINED HTML FILE.
   - Do NOT write long explanations in code comments.
   - Do NOT duplicate CSS. Use utility classes.
   - Use a "Question Generator Engine" instead of hardcoding 30+ questions.
-  - Example: `function generateQuestions(level) { ... return questions; }`
+  - Example: `function generateQuestions(level) {{ ... return questions; }}`
 - **GAME MECHANICS**: 3+ levels, clear scoring, 1-3 star rewards based on percentage.
 - **FEEDBACK**: Include a correct-answer review phase for missed questions.
 - **UI/UX**: Premium glassmorphism (gradients, backdrop-filter: blur, rounded corners). Responsive.
