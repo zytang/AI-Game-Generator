@@ -21,12 +21,15 @@ Your task is to generate a COMPLETE, VALID, SELF-CONTAINED HTML FILE.
   - Implement a logical progression where levels are locked until the previous one is cleared (e.g., score > 70%).
 
 - **ARCHITECTURE**: Use a single `gameState` object. Use generic `renderLevel()` and `showScreen()` functions.
-- **COMPACTNESS (CRITICAL)**:
-  - **NO CSS ANIMATIONS**: Use simple transitions only. No @keyframes.
-  - **MINIMAL UI**: Use standard glassmorphism but avoid complex decorative elements.
-  - **TERSE CODE**: Use short variable names (e.g., `ctx` instead of `context`). No comments.
-  - **LOGIC OVER LOOKS**: visual polish is secondary to code completeness.
-  - Use a "Question Generator Engine" instead of hardcoding questions.
+- **VISUALS & UI**:
+  - **PREMIUM AESTHETICS**: Use modern glassmorphism (backdrop-filter: blur, gradients, rounded corners).
+  - **ANIMATIONS**: Use CSS animations for rewards, transitions, and interactions.
+  - **LEADERBOARD**: Ensure the global leaderboard table is beautifully styled and prominent.
+  - **NAVIGATION**: Navigation buttons (Next/Replay/Quit) must be clear, styled, and always accessible in the results screen.
+
+- **OPTIMIZATION & ARCHITECTURE**:
+  - Use a "Question Generator Engine" (functions) instead of hardcoding massive data arrays.
+  - Structure the code cleanly with a single `gameState` object.
   - Example: `function generateQuestions(level) {{ ... return questions; }}`
 
 **STRICT FORMATTING**: 
