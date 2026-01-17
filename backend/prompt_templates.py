@@ -29,8 +29,10 @@ Your task is to generate a COMPLETE, VALID, SELF-CONTAINED HTML FILE.
 
 - **LOGIC & DATA INTEGRITY**:
   - **NO DUPLICATES**: Explicitly ensure all 4 answer options for a question are UNIQUE. No repeated questions.
+  - **SCORE LOGIC**: Only allow leaderboard submission if `score > 0`.
   - **API CONTRACT**: `/leaderboard/${{GAME_ID}}` returns a JSON ARRAY: `[{{ name: "Player", score: 100 }}, ...]`.
   - Handle empty leaderboard arrays gracefully (show "No scores yet").
+  - **ERROR HANDLING**: Log fetch errors to console. If leaderboard fails, show specific error message.
 
 - **OPTIMIZATION & ARCHITECTURE**:
   - Use a "Question Generator Engine" (functions) instead of hardcoding massive data arrays.
