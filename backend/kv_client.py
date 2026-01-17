@@ -33,9 +33,35 @@ class KVClient:
         
         key = f"leaderboard:{game_id}"
         # Get top scores (descending)
-        results = self.client.zrange(key, 0, limit - 1, desc=True, withscores=True)
-        
-        # Format for frontend: [{"name": "...", "score": ...}, ...]
-        return [{"name": r[0], "score": float(r[1])} for r in results]
+        # Get top scores (descending)
+        try:
+            results = self.client.zrange(key, 0, limit - 1, desc=True, withscores=True)
+            print(f"DEBUG: Leaderboard raw results: {results}") # Log for debugging
+            
+            # Handle different return formats
+            formatted = []
+            if not results:
+                return []
+                
+            # Case 1: List of tuples/lists/objects (standard)
+            # Check if first item is iterable and not a string
+            first = results[0]
+            if isinstance(first, (list, tuple)):
+                formatted = [{"name": str(r[0]), "score": float(r[1])} for r in results]
+            elif hasattr(first, 'member') and hasattr(first, 'score'):
+                 # Object style (ScoredMember)
+                 formatted = [{"name": r.member, "score": float(r.score)} for r in results]
+            else:
+                # Case 2: Flat list [member, score, member, score] (some clients)
+                # Iterate in chunks of 2
+                for i in range(0, len(results), 2):
+                    if i + 1 < len(results):
+                        formatted.append({"name": str(results[i]), "score": float(results[i+1])})
+            
+            return formatted
+
+        except Exception as e:
+            print(f"ERROR Parsing Leaderboard: {e}")
+            return []
 
 kv_client = KVClient()

@@ -34,11 +34,17 @@ Your task is to generate a COMPLETE, VALID, SELF-CONTAINED HTML FILE.
   - **NAVIGATION**: Navigation buttons (Next/Replay/Quit) must be clear, styled, and always accessible in the results screen.
 
 - **SHARED LEADERBOARD & SUBMISSION (MANDATORY)**:
-    - An `<input type="text" placeholder="Enter Name">` for the player.
-    - A `<button>` labeled "Submit Score".
-    - This UI must be visible regardless of the score.
-  - Use `fetch('/submit-score', ...)` to send `{{ game_id, player_name, score }}`.
-  - After submission, disable the button and refresh the leaderboard.
+  - **SUBMISSION UI**: MUST appear on "Victory" and "Game Over" screens.
+    - Input: `<input id="playerName" type="text" placeholder="Enter Name">`
+    - Button: `<button onclick="submitScore()">Submit Score</button>`
+  - **Behave**:
+    - On click -> `fetch('/submit-score', ...)`
+    - On success -> Disable button, show "Submitted!", then `fetch('/leaderboard/...')` to update table.
+    - On error -> Show simple "Connection error" text.
+
+- **NAVIGATION**:
+  - Always provide an "EXIT" or "MAIN MENU" button that goes to `/` (the generator home).
+  - Example: `<button onclick="window.location.href='/'">Back to Generator</button>`
 
 - **SCORING SYSTEM (CRITICAL)**:
   - **STANDARD POINTS**: EXACTLY 100 points per correct answer. NO TIME BONUSES.
