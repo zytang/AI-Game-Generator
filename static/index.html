@@ -1,43 +1,72 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
-    <title>AI Game Generator</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Game Generator | Create Educational Games in Seconds</title>
     <link rel="stylesheet" href="/static/style.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+    <meta name="description"
+        content="Generate fully playable, educational HTML games in seconds using advanced AI. Just describe your idea and play instantly.">
 </head>
+
 <body>
 
-    <h1>AI Educational Game Generator</h1>
+    <div class="bg-decor"></div>
 
-    <p>Enter a short description of the educational game you want to generate.</p>
+    <main class="container">
+        <div class="glass-card">
+            <div id="badge-container"></div>
+            <h1>AI Game Generator</h1>
+            <p class="subtitle">Turn your educational ideas into interactive experiences. <br> Powered by Gemini 2.5
+                Flash. Support Shared Leaderboards!</p>
 
-    <textarea id="promptInput" placeholder="Example: Create a kid-friendly math addition game for ages 6–8 with five questions and a score counter."></textarea>
+            <div class="input-wrapper">
+                <textarea id="promptInput"
+                    placeholder="Describe your game idea... (e.g., A level-based math quest for 10-year-olds with a space theme)"></textarea>
+            </div>
 
-    <br><br>
+            <button id="genBtn" class="btn-generate" onclick="generateGame()">Generate Magic</button>
 
-    <button onclick="generateGame()">Generate Game</button>
+            <div id="status" class="subtitle"></div>
 
-    <p id="status"></p>
+            <div id="playSection" style="display:none;">
+                <div class="qr-container">
+                    <div id="qrcode"></div>
+                    <p class="subtitle" style="margin-top: 15px; font-size: 0.9rem;">Scan to play on mobile</p>
+                </div>
 
-    <div id="playSection" style="display:none;">
-        <button onclick="playGame()">▶ Play Game</button>
-    </div>
+                <button class="btn-play" onclick="playGame()">
+                    <span style="font-size: 1.4rem;">▶</span> Play on this Device
+                </button>
+            </div>
+        </div>
+    </main>
 
     <script>
         let generatedGameUrl = "";
+        const genBtn = document.getElementById("genBtn");
+        const status = document.getElementById("status");
+        const playSection = document.getElementById("playSection");
+        const promptInput = document.getElementById("promptInput");
+        const badgeContainer = document.getElementById("badge-container");
 
         async function generateGame() {
-            const prompt = document.getElementById("promptInput").value;
-            const status = document.getElementById("status");
-            const playSection = document.getElementById("playSection");
+            const prompt = promptInput.value;
 
             if (!prompt.trim()) {
-                alert("Please enter a game prompt.");
+                showError("Please describe your game first!");
                 return;
             }
 
-            status.textContent = "Generating game...";
+            // UI Feedback
+            genBtn.disabled = true;
+            genBtn.textContent = "Igniting AI";
+            status.innerHTML = "Consulting the digital oracle<span class='loading-dots'></span>";
+            status.style.color = "var(--text-dim)";
             playSection.style.display = "none";
+            badgeContainer.innerHTML = "";
 
             try {
                 const response = await fetch("/generate-game", {
@@ -55,13 +84,38 @@
                 }
 
                 generatedGameUrl = data.game_url;
-                status.textContent = "Game generated successfully!";
+
+                // Generate QR Code
+                const fullUrl = window.location.origin + generatedGameUrl;
+                const qrContainer = document.getElementById("qrcode");
+                qrContainer.innerHTML = "";
+                new QRCode(qrContainer, {
+                    text: fullUrl,
+                    width: 160,
+                    height: 160,
+                    colorDark: "#ffffff",
+                    colorLight: "transparent",
+                    correctLevel: QRCode.CorrectLevel.H
+                });
+
+                // Success State
+                status.textContent = "Your world has been created!";
+                status.style.color = "#00ff88";
+                genBtn.disabled = false;
+                genBtn.textContent = "Regenerate Magic";
+                badgeContainer.innerHTML = '<span class="success-badge">✨ Artifact Forged Successfully</span>';
                 playSection.style.display = "block";
 
             } catch (error) {
-                status.textContent = "Error generating game.";
-                console.error(error);
+                showError(error.message || "The AI encountered a glitch.");
+                genBtn.disabled = false;
+                genBtn.textContent = "Try Revision";
             }
+        }
+
+        function showError(msg) {
+            status.textContent = msg;
+            status.style.color = "#ff4d4d";
         }
 
         function playGame() {
@@ -69,7 +123,16 @@
                 window.open(generatedGameUrl + "?t=" + Date.now(), "_blank");
             }
         }
+
+        // Add subtle focus effect
+        promptInput.addEventListener('focus', () => {
+            document.querySelector('.glass-card').style.boxShadow = "0 25px 50px rgba(0, 210, 255, 0.1)";
+        });
+        promptInput.addEventListener('blur', () => {
+            document.querySelector('.glass-card').style.boxShadow = "0 25px 50px rgba(0, 0, 0, 0.3)";
+        });
     </script>
 
 </body>
+
 </html>

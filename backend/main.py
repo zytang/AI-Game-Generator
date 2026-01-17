@@ -10,6 +10,7 @@ from backend.gemini_client import GeminiClient
 from backend.prompt_templates import build_game_generation_prompt
 from backend.utils import clean_html_output
 
+# Reload triggered for model version update
 app = FastAPI(title="AI Game Generator")
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -36,7 +37,13 @@ def serve_game(filename: str):
     )
 
 
-gemini_client = GeminiClient()
+gemini_client = None
+
+def get_gemini_client():
+    global gemini_client
+    if gemini_client is None:
+        gemini_client = GeminiClient()
+    return gemini_client
 
 
 class GameRequest(BaseModel):
@@ -49,6 +56,8 @@ def read_root():
         return f.read()
 
 
+from backend.kv_client import kv_client
+
 @app.post("/generate-game")
 def generate_game(request: GameRequest):
     if not request.prompt.strip():
@@ -59,21 +68,47 @@ def generate_game(request: GameRequest):
         full_prompt = build_game_generation_prompt(request.prompt)
 
         # Generate HTML from Gemini
-        raw_html = gemini_client.generate(full_prompt)
+        client = get_gemini_client()
+        raw_html = client.generate(full_prompt)
 
         # Clean output defensively
         clean_html = clean_html_output(raw_html)
+        
+        # Inject Game ID for the shared leaderboard
+        game_id = uuid.uuid4().hex
+        clean_html = clean_html.replace("[[GAME_ID]]", game_id)
 
         # Save game file
-        filename = f"game_{uuid.uuid4().hex}.html"
+        filename = f"game_{game_id}.html"
         file_path = os.path.join(GENERATED_GAMES_DIR, filename)
 
         with open(file_path, "w", encoding="utf-8") as f:
             f.write(clean_html)
 
         return JSONResponse({
-            "game_url": f"/games/{filename}"
+            "game_url": f"/games/{filename}",
+            "game_id": game_id
         })
 
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
+
+class ScoreSubmission(BaseModel):
+    game_id: str
+    player_name: str
+    score: float
+
+@app.post("/submit-score")
+def submit_score(submission: ScoreSubmission):
+    try:
+        kv_client.submit_score(submission.game_id, submission.player_name, submission.score)
+        return {"status": "success"}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Score submission failed: {str(e)}")
+
+@app.get("/leaderboard/{game_id}")
+def get_leaderboard(game_id: str):
+    try:
+        return kv_client.get_leaderboard(game_id)
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Leaderboard retrieval failed: {str(e)}")

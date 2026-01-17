@@ -1,0 +1,11 @@
+Output length: 13046
+End of output:          startGame();
+        }
+
+        // Initial setup
+        document.addEventListener('DOMContentLoaded', () => {
+            showScreen('startScreen');
+        });
+    </script>
+</body>
+</html>

@@ -3,7 +3,9 @@ from dotenv import load_dotenv
 import google.generativeai as genai
 
 # Load environment variables
-load_dotenv()
+from pathlib import Path
+env_path = Path(__file__).parent / ".env"
+load_dotenv(dotenv_path=env_path)
 
 class GeminiClient:
     def __init__(self):
@@ -14,10 +16,10 @@ class GeminiClient:
         genai.configure(api_key=api_key)
 
         self.model = genai.GenerativeModel(
-            model_name="gemini-2.5-flash",
+            model_name="gemini-2.5-flash", 
             generation_config={
-                "temperature": 0.7,
-                "max_output_tokens": 8192,
+                "temperature": 0.5,
+                "max_output_tokens": 16384,
             }
         )
 
@@ -25,9 +27,36 @@ class GeminiClient:
         """
         Sends prompt to Gemini and returns raw text output.
         """
-        response = self.model.generate_content(prompt)
+        try:
+            response = self.model.generate_content(prompt)
+        except Exception as e:
+            raise RuntimeError(f"Gemini API call failed using {self.model.model_name}: {str(e)}")
 
-        if not response or not response.text:
-            raise RuntimeError("Empty response from Gemini")
+        if not response:
+            raise RuntimeError("Empty response object from Gemini")
 
-        return response.text.strip()
+        # Check for safety blocks or other finish reasons
+        if response.candidates:
+            finish_reason = response.candidates[0].finish_reason
+            if finish_reason != 1:  # 1 is STOP (Natural stop)
+                print(f"WARNING: Game generation stopped prematurely. Reason: {finish_reason}")
+            
+            # Log token usage if available
+            try:
+                print(f"Tokens generated: {response.usage_metadata.candidates_token_count}")
+            except:
+                pass
+
+        try:
+            text = response.text
+            if not text:
+                raise RuntimeError("Response text is empty")
+            return text.strip()
+        except ValueError:
+            # This often happens when the model blocks the output due to safety
+            reason = "Unknown"
+            if response.prompt_feedback:
+                reason = str(response.prompt_feedback)
+            raise RuntimeError(f"Gemini blocked the response. Feedback: {reason}")
+        except Exception as e:
+            raise RuntimeError(f"Error accessing Gemini response text: {str(e)}")

@@ -1,43 +1,38 @@
 def build_game_generation_prompt(user_prompt: str) -> str:
     """
-    Builds a strict prompt to force Gemini to generate
-    a single self-contained HTML educational game.
+    Builds a strict prompt for a shared leaderboard educational game with navigation.
     """
 
-    system_prompt = """
-You are an expert educational game developer.
-
-Your task is to generate a COMPLETE, VALID, SELF-CONTAINED HTML FILE
-for a playable educational game based on the user's request.
-
-STRICT REQUIREMENTS:
-- Output ONLY raw HTML code.
-- Do NOT include markdown, backticks, comments, or explanations.
-- The HTML must run directly in a browser.
-- All CSS must be inside a <style> tag.
-- All JavaScript must be inside a <script> tag.
-- Do NOT use external libraries, frameworks, or assets.
-- The game must be fully playable with clear instructions.
-- The game must be kid-friendly and educational.
-- Ensure there are no placeholders or missing logic.
-
-HTML STRUCTURE REQUIREMENTS:
-- Include <!DOCTYPE html>
-- Include <html>, <head>, and <body> tags
-- Use simple, readable UI elements (buttons, text, etc.)
-- Keep the code clear and minimal
-
-FAILURE TO FOLLOW THESE RULES IS NOT ACCEPTABLE.
-"""
-
     final_prompt = f"""
-{system_prompt}
+You are an expert educational game developer.
+Your task is to generate a COMPLETE, VALID, SELF-CONTAINED HTML FILE.
+
+- **SHARED LEADERBOARD**: The game MUST support a global shared leaderboard.
+  - When the game finishes, prompt the user for their name if they are in the top scores.
+  - Use `fetch('/submit-score', ...)` to send `{{ game_id, player_name, score }}`.
+  - Use `fetch('/leaderboard/${{GAME_ID}}')` to retrieve the current top 10 scores.
+  - IMPORTANT: Use a placeholder `const GAME_ID = "[[GAME_ID]]";` at the top of your script. This will be replaced by the server.
+
+- **NAVIGATION & PROGRESSION**:
+  - After finishing a level, the results screen MUST show clear navigation buttons:
+    - "NEXT LEVEL": Only enabled if the player passed the current level and there is a next level.
+    - "REPLAY": To try the current level again.
+    - "QUIT" or "MAIN MENU": To return to the level selection or start screen.
+  - Implement a logical progression where levels are locked until the previous one is cleared (e.g., score > 70%).
+
+- **ARCHITECTURE**: Use a single `gameState` object. Use generic `renderLevel()` and `showScreen()` functions.
+- **GAME MECHANICS**: 3+ levels, clear scoring, 1-3 star rewards based on percentage.
+- **FEEDBACK**: Include a correct-answer review phase for missed questions.
+- **UI/UX**: Premium glassmorphism (gradients, backdrop-filter: blur, rounded corners). Responsive.
+
+**STRICT FORMATTING**: 
+1. Output ONLY raw HTML (no markdown).
+2. The JavaScript MUST be the LAST tag in the <body>.
+3. The JavaScript MUST contain a single `initGame()` call at the bottom.
 
 USER GAME REQUEST:
 {user_prompt}
 
-REMINDER:
-Return ONLY the final HTML file. Nothing else.
+CRITICAL: Return ONLY complete, valid HTML ending in </html>. No conversational filler.
 """
-
     return final_prompt.strip()

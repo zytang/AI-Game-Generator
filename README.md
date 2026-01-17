@@ -1,157 +1,91 @@
-# 🎮 AI Educational Game Generator
+# 🎮 AI Educational Game Generator (Enhanced)
 
 [![FastAPI](https://img.shields.io/badge/FastAPI-0.95+-green.svg)](https://fastapi.tiangolo.com/)
 [![Python](https://img.shields.io/badge/Python-3.9+-blue.svg)](https://www.python.org/)
-[![License](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![Vercel](https://img.shields.io/badge/Deploy-Vercel-black.svg)](https://vercel.com/)
+[![Gemini](https://img.shields.io/badge/AI-Gemini_2.5_Flash-blue.svg)](https://deepmind.google/technologies/gemini/)
 
-An AI-powered web application that generates fully playable, self-contained HTML educational games based on user prompts.
-The system uses FastAPI (Python) for the backend and Google Gemini (free tier) for game generation.
+An AI-powered web application that generates fully playable, high-fidelity educational HTML games. Now enhanced with **Shared Global Leaderboards**, **Multi-level Challenges**, and **Performance Tracking**.
 
-The generated games run directly in the browser with no external libraries, no setup, and no dependencies.
+The system uses FastAPI (Python) and Google Gemini 2.5 Flash to create self-contained artifacts that run instantly in any browser.
 
-## 🚀Project Overview
-**Check it Out:** [AI Game Generator🔗](https://ai-game-generator-yiw2.onrender.com)
-### Objective
+## 🚀 New & Enhanced Features
 
-- User provides a short educational game idea (e.g., math game for kids)
-- Backend uses Gemini AI to generate a complete HTML game
-- The generated game includes:
-    - `HTML`
-    - `CSS`
-    - `JavaScript` (all in a single file)
-- User can immediately play the game in a new browser tab
+✅ **Shared Global Leaderboards**: Uses **Vercel KV (Redis)** to sync scores across all players and devices. Scan a QR code and compete in real-time!
 
-### This project focuses on:
+✅ **Leveled Challenges & Progression**: Games now feature 3+ difficulty levels with a progression system (levels lock until the previous one is mastered).
 
-- Clean system design
-- Prompt engineering
-- Safe LLM integration
-- End-to-end functionality rather than UI polish.
+✅ **Advanced Game Engine**: Generates more robust, compact code using "Logical Engines" to prevent truncation and ensure complex features fit within token limits.
 
-## 🧠Key Features
+✅ **Premium UI/UX**: Highly polished glassmorphism aesthetics, smooth CSS animations, and responsive design for mobile play.
 
-✅ AI-generated fully playable HTML games
+✅ **Comprehensive Feedback**: 
+- **Star Rewards**: 1-3 star ratings based on percentage score.
+- **Review Phase**: Interactive review of missed questions with explanations.
+- **Navigation**: Dedicated "Next Level", "Replay", and "Quit" flow.
 
-✅ No external libraries or frameworks in generated games
+✅ **Gemini 2.5 Flash Integration**: Optimized for the latest model to provide faster generation and improved logic.
 
-✅ Works entirely on Gemini free tier
-
-✅ Simple and clear frontend
-
-✅ FastAPI backend with clean separation of concerns
-
-✅ Safe handling of LLM output (validation + caching control)
-
-✅ GitHub-ready project structure
-
-## 🗂️ Folder Structure
+## 🗂️ Updated Project Structure
 ```bash
 ai-game-generator/
 │
 ├── backend/
-│   ├── main.py              # FastAPI app & API routes
-│   ├── gemini_client.py     # Gemini API integration
-│   ├── prompt_templates.py  # System + user prompt builder
-│   └── utils.py             # Output cleaning & validation
+│   ├── main.py              # FastAPI app with leaderboard endpoints
+│   ├── gemini_client.py     # Gemini 2.5 API integration
+│   ├── kv_client.py         # Vercel KV / Redis score persistence
+│   ├── prompt_templates.py  # Advanced multi-level + navigation prompts
+│   └── utils.py             # Output cleaning & placeholder injection
 │
 ├── static/
-│   ├── index.html           # Frontend UI
-│   └── style.css            # Minimal styling
+│   ├── index.html           # Modernized Frontend UI
+│   └── style.css            # Premium Glassmorphism styling
 │
-├── generated_games/         # AI-generated HTML games
-│
-├── requirements.txt
-├── LICENSE
-├── .gitignore
+├── generated_games/         # Local dev game storage
+├── requirements.txt         # Added upstash-redis for KV support
 └── README.md
 ```
 
-### 🔧 Prerequisites
+## ️⚙️ Prerequisites
 
 - Python 3.9+
-- Google Gemini API key (free tier)
-- Internet connection (for Gemini API)
+- Google Gemini API key (Paid tier recommended for high throughput)
+- **Vercel KV** (for shared leaderboards)
 
-## 🚀 Quick Start
+## 🚀 Deployment (Vercel)
 
-### 1. Clone the Repository
-```bash
-git clone https://github.com/yashdew3/AI-Game-Generator.git
-cd AI-Game-Generator
-```
+This project is optimized for Vercel deployment. To enable the shared leaderboard, you must configure the following environment variables:
 
-### 2. Create Virtual Environment
-```bash
-# Create virtual environment
-python -m venv .venv
+1. **Push to GitHub**: Initialize a repo and push your code.
+2. **Connect to Vercel**: Import the repository.
+3. **Configure KV**: Add a **Vercel KV** storage instance to your project.
+4. **Environment Variables**:
+   - `GEMINI_API_KEY`: Your Google AI Studio key.
+   - `KV_REST_API_URL`: Automatically added by Vercel KV.
+   - `KV_REST_API_TOKEN`: Automatically added by Vercel KV.
 
-# Activate virtual environment
-# Windows
-.venv\Scripts\activate
-# macOS/Linux
-source .venv/bin/activate
-```
+## ▶️ Running Locally
 
-### 3. Install dependencies
-```bash
-pip install -r requirements.txt
-```
+1. Create a `.env` in `backend/`:
+   ```env
+   GEMINI_API_KEY=your_key
+   KV_REST_API_URL=your_upstash_url
+   KV_REST_API_TOKEN=your_upstash_token
+   ```
+2. Install dependencies:
+   ```bash
+   pip install -r requirements.txt
+   ```
+3. Start the server:
+   ```bash
+   uvicorn backend.main:app --reload
+   ```
 
-### 3. Environment Configuration
-Create a `.env` file in the backend directory:
-```env
-GEMINI_API_KEY=your_gemini_api_key_here
-```
+## 🕹️ How to Play
 
-## ▶️ Running the Project Locally
-From the project root:
-```bash
-uvicorn backend.main:app --reload
-```
-The application will be available at:
-```cpp
-http://127.0.0.1:8000
-```
-
-## 🕹️ How to Generate and Play a Game
-
-1. Open the app in your browser:
-http://127.0.0.1:8000
-
-2. Enter an educational game prompt, for example:
-```css
-Create a kid-friendly math addition game for ages 6–8 with five questions and a score counter.
-```
-3. Click Generate Game
-4. Once generation is complete, click ▶ Play Game
-5. The game opens in a new browser tab and is immediately playable
-
-## 🤖 AI & Prompting Details
-- Model used: Gemini 2.5 Flash
-- Free-tier compatible
-- Strict system prompt enforces:
-    - Single valid HTML file
-    - Inline CSS & JavaScript
-    - No external assets or libraries
-
-The backend validates the AI output to ensure:
-- Complete HTML document
-- No truncated or broken files
-- Safe serving without caching issues
-
-## 🤝 Contributing
-
-Contributions, issues, and feature requests are welcome! Feel free to check the [issues page](https://github.com/yashdew3/AI-Game-Generator/issues) (if you have one) or open a new issue to discuss changes. Pull requests are also appreciated.
-
-## 📝 License
-
-This project is licensed under the MIT License © Yash Dewangan
-
-## Let's Connect
-Feel free to connect or suggest improvements!
-- Built by **Yash Dewangan**
-- 🐙Github: [YashDewangan](https://github.com/yashdew3)
-- 📧Email: [yashdew06@gmail.com](mailto:yashdew06@gmail.com)
-- 🔗Linkedin: [YashDewangan](https://www.linkedin.com/in/yash-dewangan/)
+1. **Describe**: Enter a prompt (e.g., "Space-themed multiplication for 5th graders").
+2. **Generate**: The AI designs a multi-level game with premium aesthetics.
+3. **Compete**: Scan the QR code to play on mobile. Submit your score to the **Global Leaderboard** and see how you rank against other students!
 
 ---
+*Enhanced version based on a fork of [YashDewangan/AI-Game-Generator](https://github.com/yashdew3/AI-Game-Generator).*

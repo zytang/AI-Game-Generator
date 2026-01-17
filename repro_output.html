@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>InfoSys Consultant Challenge</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start; /* Align at the top, not center vertically */
+            min-height: 100vh;
+            background-color: #f4f7f6;
+            margin: 0;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+
+        #game-container {
+            background-color: #ffffff;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            padding: 30px;
+            width: 90%;
+            max-width: 800px;
+            text-align: center;
+            margin-top: 50px; /* Push it down a bit from the top */
+        }
+
+        .screen {
+            display: none;
+        }
+
+        h1 {
+            color: #2c3e50;
+            margin-bottom: 20px;
+        }
+
+        h2 {
+            color: #34495e;
+            margin-bottom: 15px;
+        }
+
+        p {
+            color: #555;
+            line-height: 1.6;
+            margin-bottom: 10px;
+        }
+
+        button {
+            background-color: #3498db;
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            margin: 10px 5px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background-color 0.3s ease;
+        }
+
+        button:hover {
+            background-color: #2980b9;
+        }
+
+        .option-button {
+            display: block;
+            width: 100%;
+            text-align: left;
+            margin-bottom: 10px;
+            background-color: #ecf0f1;
+            color: #34495e;
+            padding: 15px;
+            border: 1px solid #bdc3c7;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 15px;
+            transition: background-color 0.2s ease, border-color 0.2s ease;
+        }
+
+        .option-button:hover {
+            background-color: #e0e6e7;
+            border-color: #95a5a6;
+        }
+
+        .option-button.selected {
+            background-color: #a2d2ff; /* Light blue for selected */
+            border-color: #3498db;
+            font-weight: bold;
+        }
+
+        #optionsContainer {
+            margin-top: 20px;
+            margin-bottom: 20px;
+        }
+
+        #feedbackMessage {
+            font-weight: bold;
+            font-size: 1.1em;
+            margin-bottom: 10px;
+        }
+
+        #feedbackExplanation {
+            text-align: left;
+            background-color: #e8f4f8;
+            border-left: 5px solid #3498db;
+            padding: 15px;
+            margin-top: 20px;
+            margin-bottom: 20px;
+            border-radius: 3px;
+        }
+
+        #scoreDisplay, #feedbackScoreDisplay, #finalScoreDisplay, #totalScenarios {
+            font-weight: bold;
+            color: #27ae60;
+        }
+    </style>
+</head>
+<body>
+    <div id="game-container">
+        <div id="startScreen" class="screen">
+            <h1>InfoSys Consultant Challenge</h1>
+            <p>Welcome, aspiring Information Systems Consultant! Your task is to analyze business problems and recommend the most suitable Information System solutions.</p>
+            <p>Read each scenario carefully and choose the best option. Your expertise will be rewarded!</p>
+            <button onclick="startGame()">Start Game</button>
+        </div>
+
+        <div id="gameScreen" class="screen">
+            <h2>Scenario <span id="scenarioNumber">1</span></h2>
+            <p id="scenarioText"></p>
+            <div id="optionsContainer">
+            </div>
+            <button onclick="checkAnswer()">Submit Answer</button>
+            <p>Score: <span id="scoreDisplay">0</span></p>
+        </div>
+
+        <div id="feedbackScreen" class="screen">
+            <h2>Feedback</h2>
+            <p id="feedbackMessage"></p>
+            <p id="feedbackExplanation"></p>
+            <button onclick="nextScenario()">Next Scenario</button>
+            <p>Current Score: <span id="feedbackScoreDisplay">0</span></p>
+        </div>
+
+        <div id="endScreen" class="screen">
+            <h2>Game Over!</h2>
+            <p>You've completed all scenarios.</p>
+            <p>Your final score: <span id="finalScoreDisplay">0</span> out of <span id="totalScenarios"></span></p>
+            <button onclick="resetGame()">Play Again</button>
+        </div>
+    </div>
+
+    <script>
+        const gameData = [
+            {
+                scenario: "A large manufacturing company is struggling with inefficient inventory management, production scheduling, and financial reporting across its various departments. They need a unified system to integrate all these functions.",
+                options: [
+                    "Implement an Enterprise Resource Planning (ERP) system.",
+                    "Develop a new Customer Relationship Management (CRM) system.",
+                    "Upgrade their existing Transaction Processing System (TPS)."
+                ],
+                correctAnswerIndex: 0,
+                explanation: "Correct! An ERP system integrates core business processes like finance, HR, manufacturing, and supply chain into a single, comprehensive system, addressing the company's need for unification and efficiency."
+            },
+            {
+                scenario: "An online retail startup wants to better understand customer behavior, identify purchasing trends, and personalize product recommendations to increase sales.",
+                options: [
+                    "Invest in a robust cybersecurity suite.",
+                    "Implement a Business Intelligence (BI) system with data warehousing.",
+                    "Upgrade their physical network infrastructure."
+                ],
+                correctAnswerIndex: 1,
+                explanation: "Correct! A BI system, often supported by data warehousing, is designed to collect, analyze, and present business data, providing insights into customer behavior and trends to support decision-making and personalization."
+            },
+            {
+                scenario: "A small consulting firm needs to manage client interactions, track leads, schedule meetings, and automate follow-up emails to improve client relationships and sales pipeline.",
+                options: [
+                    "Implement a Supply Chain Management (SCM) system.",
+                    "Adopt a Customer Relationship Management (CRM) system.",
+                    "Develop a new internal Human Resources Information System (HRIS)."
+                ],
+                correctAnswerIndex: 1,
+                explanation: "Correct! A CRM system is specifically designed to manage a company's interactions with current and future customers, focusing on improving business relationships, customer retention, and driving sales growth."
+            },
+            {
+                scenario: "A global logistics company is facing challenges optimizing routes, tracking shipments in real-time, and coordinating with suppliers and distributors efficiently.",
+                options: [
+                    "Implement a Decision Support System (DSS) for executive strategic planning.",
+                    "Deploy a robust Supply Chain Management (SCM) system.",
+                    "Upgrade their data center's cooling systems."
+                ],
+                correctAnswerIndex: 1,
+                explanation: "Correct! An SCM system helps manage the flow of goods, data, and finances related to a product or service, from the procurement of raw materials to the delivery of the final product, making it ideal for logistics optimization and coordination."
+            },
+            {
+                scenario: "A bank wants to process millions of daily transactions (deposits, withdrawals, transfers) quickly, accurately, and securely, ensuring data integrity.",
+                options: [
+                    "Implement a new social media marketing platform.",
+                    "Focus on upgrading their Transaction Processing Systems (TPS).",
+                    "Deploy an advanced project management software."
+                ],
+                correctAnswerIndex: 1,
+                explanation: "Correct! TPS are fundamental to businesses, designed to process high volumes of routine business transactions efficiently and reliably, which is crucial for banking operations to maintain accuracy and security."
+            }
+        ];
+
+        let currentScenarioIndex = 0;
+        let score = 0;
+        let selectedOptionIndex = -1;
+
+        const startScreen = document.getElementById('startScreen');
+        const gameScreen = document.getElementById('gameScreen');
+        const feedbackScreen = document.getElementById('feedbackScreen');
+        const endScreen = document.getElementById('endScreen');
+
+        const scenarioNumberSpan = document.getElementById('scenarioNumber');
+        const scenarioTextP = document.getElementById('scenarioText');
+        const optionsContainerDiv = document.getElementById('optionsContainer');
+        const scoreDisplaySpan = document.getElementById('scoreDisplay');
+        
+        const feedbackMessageP = document.getElementById('feedbackMessage');
+        const feedbackExplanationP = document.getElementById('feedbackExplanation');
+        const feedbackScoreDisplaySpan = document.getElementById('feedbackScoreDisplay');
+
+        const finalScoreDisplaySpan = document.getElementById('finalScoreDisplay');
+        const totalScenariosSpan = document.getElementById('totalScenarios');
+
+        function showScreen(screenId) {
+            startScreen.style.display = 'none';
+            gameScreen.style.display = 'none';
+            feedbackScreen.style.display = 'none';
+            endScreen.style.display = 'none';
+            document.getElementById(screenId).style.display = 'block';
+        }
+
+        function startGame() {
+            currentScenarioIndex = 0;
+            score = 0;
+            selectedOptionIndex = -1;
+            totalScenariosSpan.textContent = gameData.length;
+            displayScenario();
+            showScreen('gameScreen');
+        }
+
+        function displayScenario() {
+            if (currentScenarioIndex < gameData.length) {
+                const scenario = gameData[currentScenarioIndex];
+                scenarioNumberSpan.textContent = currentScenarioIndex + 1;
+                scenarioTextP.textContent = scenario.scenario;
+                optionsContainerDiv.innerHTML = '';
+                selectedOptionIndex = -1; 
+
+                scenario.options.forEach((option, index) => {
+                    const button = document.createElement('button');
+                    button.classList.add('option-button');
+                    button.textContent = option;
+                    button.onclick = () => selectOption(index);
+                    optionsContainerDiv.appendChild(button);
+                });
+                scoreDisplaySpan.textContent = score;
+            } else {
+                endGame();
+            }
+        }
+
+        function selectOption(index) {
+            selectedOptionIndex = index;
+            const buttons = optionsContainerDiv.getElementsByClassName('option-button');
+            for (let i = 0; i < buttons.length; i++) {
+                buttons[i].classList.remove('selected');
+            }
+            buttons[index].classList.add('selected');
+        }
+
+        function checkAnswer() {
+            if (selectedOptionIndex === -1) {
+                alert("Please select an option before submitting!");
+                return;
+            }
+
+            const currentScenario = gameData[currentScenarioIndex];
+            if (selectedOptionIndex === currentScenario.correctAnswerIndex) {
+                score++;
+                feedbackMessageP.textContent = "Correct! Well done!";
+                feedbackExplanationP.textContent = currentScenario.explanation;
+            } else {
+                feedbackMessageP.textContent = "Incorrect. Let's learn from this!";
+                feedbackExplanationP.textContent = currentScenario.explanation + "\n\n(Your choice was not the most suitable for this specific problem.)";
+            }
+            feedbackScoreDisplaySpan.textContent = score;
+            showScreen('feedbackScreen');
+        }
+
+        function nextScenario() {
+            currentScenarioIndex++;
+            displayScenario(); 
+            if (currentScenarioIndex < gameData.length) {
+                showScreen('gameScreen');
+            } else {
+                endGame();
+            }
+        }
+
+        function endGame() {
+            finalScoreDisplaySpan.textContent = score;
+            showScreen('endScreen');
+        }
+
+        function resetGame() {
+            startGame();
+        }
+
+        // Initial setup
+        document.addEventListener('DOMContentLoaded', () => {
+            showScreen('startScreen');
+        });
+    </script>
+</body>
+</html>
