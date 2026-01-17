@@ -27,9 +27,20 @@ Your task is to generate a COMPLETE, VALID, SELF-CONTAINED HTML FILE.
   - **LEADERBOARD**: Ensure the global leaderboard table is beautifully styled and prominent.
   - **NAVIGATION**: Navigation buttons (Next/Replay/Quit) must be clear, styled, and always accessible in the results screen.
 
+- **SHARED LEADERBOARD & SUBMISSION (MANDATORY)**:
+  - **SUBMISSION UI**: On the "Level Complete" or "Game Over" screen, if `score > 0`, you MUST display:
+    - An `<input type="text">` for the player's name.
+    - A `<button>` labeled "Submit Score".
+    - DO NOT auto-submit. The user must click to submit.
+  - Use `fetch('/submit-score', ...)` to send `{{ game_id, player_name, score }}`.
+  - Refresh the leaderboard (`fetch('/leaderboard/...')`) immediately after submission.
+
+- **SCORING SYSTEM**:
+  - **STANDARD POINTS**: Use 100 points per correct answer.
+  - **NO INFLATION**: Do not add massive time bonuses (e.g. max 10-20 bonus points). Keep scores readable (e.g. 0-1000 range).
+
 - **LOGIC & DATA INTEGRITY**:
   - **NO DUPLICATES**: Explicitly ensure all 4 answer options for a question are UNIQUE. No repeated questions.
-  - **SCORE LOGIC**: Only allow leaderboard submission if `score > 0`.
   - **API CONTRACT**: `/leaderboard/${{GAME_ID}}` returns a JSON ARRAY: `[{{ name: "Player", score: 100 }}, ...]`.
   - Handle empty leaderboard arrays gracefully (show "No scores yet").
   - **ERROR HANDLING**: Log fetch errors to console. If leaderboard fails, show specific error message.
