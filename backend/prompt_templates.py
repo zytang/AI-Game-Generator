@@ -27,7 +27,7 @@ Your task is to generate a COMPLETE, VALID, SELF-CONTAINED HTML FILE.
   - Use a "Question Generator Engine" instead of hardcoding 30+ questions.
   - Example: `function generateQuestions(level) {{ ... return questions; }}`
 - **GAME MECHANICS**: 3+ levels, clear scoring, 1-3 star rewards based on percentage.
-- **FEEDBACK**: Include a correct-answer review phase for missed questions.
+- **FEEDBACK**: Include a correct-answer review phase for missed questions. MUST include a "Back" button to return to the results screen.
 - **UI/UX**: Premium glassmorphism (gradients, backdrop-filter: blur, rounded corners). Responsive.
 
 **STRICT FORMATTING**: 
