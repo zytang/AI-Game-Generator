@@ -86,7 +86,11 @@
                 generatedGameUrl = data.game_url;
 
                 // Generate QR Code
-                const fullUrl = window.location.origin + generatedGameUrl;
+                const origin = window.location.origin;
+                // Clean double slashes just in case, though usually not needed if backend returns /games/...
+                const gamePath = generatedGameUrl.startsWith('/') ? generatedGameUrl : '/' + generatedGameUrl;
+                const fullUrl = `${origin}${gamePath}`;
+
                 const qrContainer = document.getElementById("qrcode");
                 qrContainer.innerHTML = "";
                 new QRCode(qrContainer, {
