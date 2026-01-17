@@ -21,14 +21,13 @@ Your task is to generate a COMPLETE, VALID, SELF-CONTAINED HTML FILE.
   - Implement a logical progression where levels are locked until the previous one is cleared (e.g., score > 70%).
 
 - **ARCHITECTURE**: Use a single `gameState` object. Use generic `renderLevel()` and `showScreen()` functions.
-- **COMPACTNESS**: EXTREMELY CRITICAL. 
-  - Do NOT write long explanations in code comments.
-  - Do NOT duplicate CSS. Use utility classes.
-  - Use a "Question Generator Engine" instead of hardcoding 30+ questions.
+- **COMPACTNESS (CRITICAL)**:
+  - **NO CSS ANIMATIONS**: Use simple transitions only. No @keyframes.
+  - **MINIMAL UI**: Use standard glassmorphism but avoid complex decorative elements.
+  - **TERSE CODE**: Use short variable names (e.g., `ctx` instead of `context`). No comments.
+  - **LOGIC OVER LOOKS**: visual polish is secondary to code completeness.
+  - Use a "Question Generator Engine" instead of hardcoding questions.
   - Example: `function generateQuestions(level) {{ ... return questions; }}`
-- **GAME MECHANICS**: 3+ levels, clear scoring, 1-3 star rewards based on percentage.
-- **FEEDBACK**: Include a correct-answer review phase for missed questions. MUST include a "Back" button to return to the results screen.
-- **UI/UX**: Premium glassmorphism (gradients, backdrop-filter: blur, rounded corners). Responsive.
 
 **STRICT FORMATTING**: 
 1. Output ONLY raw HTML (no markdown).
