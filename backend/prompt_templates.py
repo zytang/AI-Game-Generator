@@ -29,7 +29,7 @@ Your task is to generate a COMPLETE, VALID, SELF-CONTAINED HTML FILE.
 
 - **LOGIC & DATA INTEGRITY**:
   - **NO DUPLICATES**: Explicitly ensure all 4 answer options for a question are UNIQUE. No repeated questions.
-  - **API CONTRACT**: `/leaderboard/${GAME_ID}` returns a JSON ARRAY: `[{ name: "Player", score: 100 }, ...]`.
+  - **API CONTRACT**: `/leaderboard/${{GAME_ID}}` returns a JSON ARRAY: `[{{ name: "Player", score: 100 }}, ...]`.
   - Handle empty leaderboard arrays gracefully (show "No scores yet").
 
 - **OPTIMIZATION & ARCHITECTURE**:
