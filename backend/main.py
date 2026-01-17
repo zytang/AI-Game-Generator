@@ -14,7 +14,11 @@ from backend.utils import clean_html_output
 app = FastAPI(title="AI Game Generator")
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-GENERATED_GAMES_DIR = os.path.join(BASE_DIR, "generated_games")
+# Handle Vercel's read-only file system
+if os.environ.get("VERCEL"):
+    GENERATED_GAMES_DIR = "/tmp"
+else:
+    GENERATED_GAMES_DIR = os.path.join(BASE_DIR, "generated_games")
 
 os.makedirs(GENERATED_GAMES_DIR, exist_ok=True)
 
