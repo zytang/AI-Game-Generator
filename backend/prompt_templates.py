@@ -13,6 +13,12 @@ Your task is to generate a COMPLETE, VALID, SELF-CONTAINED HTML FILE.
   - Use `fetch('/leaderboard/${{GAME_ID}}')` to retrieve the current top 10 scores.
   - IMPORTANT: Use a placeholder `const GAME_ID = "[[GAME_ID]]";` at the top of your script. This will be replaced by the server.
 
+- **GAME STATE MANAGEMENT**:
+  - Track `currentLevel` (1-based) and `totalLevels` (e.g., 3).
+  - **INTERMEDIATE LEVEL (currentLevel < totalLevels)**: Show "Level Complete", Score, and "Next Level" button.
+  - **FINAL LEVEL (currentLevel === totalLevels)**: Show "Victory", Final Score, and the **MANDATORY SUBMISSION UI**.
+  - **GAME OVER (Lost)**: Show "Game Over", Final Score, and the **MANDATORY SUBMISSION UI**.
+
 - **NAVIGATION & PROGRESSION**:
   - After finishing a level, the results screen MUST show clear navigation buttons:
     - "NEXT LEVEL": Only enabled if the player passed the current level and there is a next level.
@@ -28,7 +34,6 @@ Your task is to generate a COMPLETE, VALID, SELF-CONTAINED HTML FILE.
   - **NAVIGATION**: Navigation buttons (Next/Replay/Quit) must be clear, styled, and always accessible in the results screen.
 
 - **SHARED LEADERBOARD & SUBMISSION (MANDATORY)**:
-  - **SUBMISSION UI**: On the "Game Over" or "Victory" screen, you MUST ALWAYS display:
     - An `<input type="text" placeholder="Enter Name">` for the player.
     - A `<button>` labeled "Submit Score".
     - This UI must be visible regardless of the score.
