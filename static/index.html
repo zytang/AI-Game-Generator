@@ -20,11 +20,29 @@
             <div id="badge-container"></div>
             <h1>AI Game Generator</h1>
             <p class="subtitle">Turn your educational ideas into interactive experiences. <br> Powered by Gemini 2.5
-                Pro. Support Shared Leaderboards!</p>
+                Pro.</p>
 
             <div class="input-wrapper">
                 <textarea id="promptInput"
                     placeholder="Describe your game idea... (e.g., A level-based math quest for 10-year-olds with a space theme)"></textarea>
+            </div>
+
+            <div class="options-grid">
+                <div class="option-group">
+                    <label>Difficulty:</label>
+                    <select id="difficultySelect">
+                        <option value="easy">Easy (Beginner)</option>
+                        <option value="medium" selected>Medium (Standard)</option>
+                        <option value="hard">Hard (expert)</option>
+                    </select>
+                </div>
+                <div class="option-group">
+                    <label>Game Mode:</label>
+                    <div class="toggle-switch">
+                        <input type="checkbox" id="timerToggle" checked>
+                        <label for="timerToggle">Timed Mode</label>
+                    </div>
+                </div>
             </div>
 
             <button id="genBtn" class="btn-generate" onclick="generateGame()">Generate Magic</button>
@@ -37,9 +55,14 @@
                     <p class="subtitle" style="margin-top: 15px; font-size: 0.9rem;">Scan to play on mobile</p>
                 </div>
 
-                <button class="btn-play" onclick="playGame()">
-                    <span style="font-size: 1.4rem;">▶</span> Play on this Device
-                </button>
+                <div class="action-buttons">
+                    <button class="btn-play" onclick="playGame()">
+                        <span style="font-size: 1.4rem;">▶</span> Play Now
+                    </button>
+                    <a id="downloadLink" class="btn-secondary" style="display:none;" download>
+                        <span>💾</span> Save HTML
+                    </a>
+                </div>
             </div>
         </div>
     </main>
@@ -51,14 +74,20 @@
         const playSection = document.getElementById("playSection");
         const promptInput = document.getElementById("promptInput");
         const badgeContainer = document.getElementById("badge-container");
+        const downloadLink = document.getElementById("downloadLink");
 
         async function generateGame() {
-            const prompt = promptInput.value;
+            let prompt = promptInput.value;
+            const difficulty = document.getElementById("difficultySelect").value;
+            const isTimed = document.getElementById("timerToggle").checked;
 
             if (!prompt.trim()) {
                 showError("Please describe your game first!");
                 return;
             }
+
+            // Append options to prompt
+            prompt += `\n\n[OPTIONS]\nDifficulty: ${difficulty}\nTimed Mode: ${isTimed ? "YES" : "NO"}`;
 
             // UI Feedback
             genBtn.disabled = true;
@@ -121,6 +150,12 @@
                 genBtn.disabled = false;
                 genBtn.textContent = "Regenerate Magic";
                 badgeContainer.innerHTML = '<span class="success-badge">✨ Artifact Forged Successfully</span>';
+
+                // Set download link
+                downloadLink.href = generatedGameUrl;
+                downloadLink.download = generatedGameUrl.split('/').pop();
+                downloadLink.style.display = "inline-flex";
+
                 playSection.style.display = "block";
 
             } catch (error) {
