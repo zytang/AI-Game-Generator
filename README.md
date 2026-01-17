@@ -87,5 +87,14 @@ This project is optimized for Vercel deployment. To enable the shared leaderboar
 2. **Generate**: The AI designs a multi-level game with premium aesthetics.
 3. **Compete**: Scan the QR code to play on mobile. Submit your score to the **Global Leaderboard** and see how you rank against other students!
 
+## 🛠️ Modifying Generated Games
+
+The game artifacts are single-file HTML applications. To edit content (e.g., fix a typo or change a question):
+
+1. **Download**: Click the "Save HTML" button after generation.
+2. **Open**: Open the `.html` file in any text editor (Notepad, VS Code, etc.).
+3. **Edit**: Search for the text you want to change or modify the JavaScript `questions` array.
+4. **Save**: Save the file and open it in your browser to play the updated version.
+
 ---
 *Enhanced version based on a fork of [YashDewangan/AI-Game-Generator](https://github.com/yashdew3/AI-Game-Generator).*
