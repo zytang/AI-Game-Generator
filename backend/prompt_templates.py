@@ -43,8 +43,8 @@ Your task is to generate a COMPLETE, VALID, SELF-CONTAINED HTML FILE.
     - On error -> Show simple "Connection error" text.
 
 - **NAVIGATION**:
-  - Always provide an "EXIT" or "MAIN MENU" button that goes to `/` (the generator home).
-  - Example: `<button onclick="window.location.href='/'">Back to Generator</button>`
+  - **FINAL SCREENS ONLY**: The "EXIT" or "MAIN MENU" button (linking to `/`) must ONLY appear on the "Victory" or "Game Over" screens.
+  - **NO CLUTTER**: Do NOT show this button during active gameplay (questions/levels).
 
 - **SCORING SYSTEM (CRITICAL)**:
   - **STANDARD POINTS**: EXACTLY 100 points per correct answer. NO TIME BONUSES.
