@@ -19,7 +19,7 @@ class GeminiClient:
             model_name="gemini-2.5-pro", 
             generation_config={
                 "temperature": 0.5,
-                "max_output_tokens": 8192,
+                "max_output_tokens": 65536,
             }
         )
 
