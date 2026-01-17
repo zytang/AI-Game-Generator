@@ -27,6 +27,11 @@ Your task is to generate a COMPLETE, VALID, SELF-CONTAINED HTML FILE.
   - **LEADERBOARD**: Ensure the global leaderboard table is beautifully styled and prominent.
   - **NAVIGATION**: Navigation buttons (Next/Replay/Quit) must be clear, styled, and always accessible in the results screen.
 
+- **LOGIC & DATA INTEGRITY**:
+  - **NO DUPLICATES**: Explicitly ensure all 4 answer options for a question are UNIQUE. No repeated questions.
+  - **API CONTRACT**: `/leaderboard/${GAME_ID}` returns a JSON ARRAY: `[{ name: "Player", score: 100 }, ...]`.
+  - Handle empty leaderboard arrays gracefully (show "No scores yet").
+
 - **OPTIMIZATION & ARCHITECTURE**:
   - Use a "Question Generator Engine" (functions) instead of hardcoding massive data arrays.
   - Structure the code cleanly with a single `gameState` object.
