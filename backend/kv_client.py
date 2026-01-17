@@ -9,7 +9,6 @@ load_dotenv(dotenv_path=env_path)
 
 class KVClient:
     def __init__(self):
-    def __init__(self):
         # Try Vercel KV vars first, then generic Upstash vars
         url = os.getenv("KV_REST_API_URL") or os.getenv("UPSTASH_REDIS_REST_URL")
         token = os.getenv("KV_REST_API_TOKEN") or os.getenv("UPSTASH_REDIS_REST_TOKEN")
