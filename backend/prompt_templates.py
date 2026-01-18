@@ -19,6 +19,15 @@ Your task is to generate a COMPLETE, VALID, SELF-CONTAINED HTML FILE.
   - **FINAL LEVEL (currentLevel === totalLevels)**: Show "Victory", Final Score, and the **MANDATORY SUBMISSION UI**.
   - **GAME OVER (Lost)**: Show "Game Over", Final Score, and the **MANDATORY SUBMISSION UI**.
 
+- **DIFFICULTY CONFIGURATION**:
+  - **Analyze the [OPTIONS] block in the prompt**:
+    - If `Timed Mode: YES`: Set a time limit (e.g., 15s/30s/60s based on difficulty).
+    - If `Timed Mode: NO`: Do NOT implement a timer. Remove "Time" from UI.
+  - **INSTRUCTIONS TEXT**: In the "How to Play" section, **HARDCODE** the numbers.
+    - Write: "You have 15 seconds..." NOT "You have {time} seconds...".
+    - Write: "Score 70% to pass..." NOT "Score {pct}% to pass...".
+    - Ensure these numbers match your Javascript logic.
+
 - **NAVIGATION & PROGRESSION**:
   - After finishing a level, the results screen MUST show clear navigation buttons:
     - "NEXT LEVEL": Only enabled if the player passed the current level and there is a next level.
