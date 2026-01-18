@@ -44,6 +44,11 @@ Your task is to generate a COMPLETE, VALID, SELF-CONTAINED HTML FILE.
   - **LEADERBOARD**: Ensure the global leaderboard table is beautifully styled and prominent.
   - **NAVIGATION**: Navigation buttons (Next/Replay/Quit) must be clear, styled, and always accessible in the results screen.
 
+- **MOBILE RESPONSIVENESS (CRITICAL)**:
+  - **VIEWPORT**: Must include `<meta name="viewport" content="width=device-width, initial-scale=1.0">`.
+  - **TOUCH TARGETS**: Buttons must be at least 44px height/width for touch.
+  - **LAYOUT**: Use CSS Grid/Flexbox to ensure content stacks vertically on small screens. Text must be readable without zooming.
+
 - **SHARED LEADERBOARD & SUBMISSION (MANDATORY)**:
   - **SUBMISSION UI**: MUST appear on "Victory" and "Game Over" screens.
     - Input: `<input id="playerName" type="text" placeholder="Enter Name">`
