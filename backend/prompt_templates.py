@@ -20,8 +20,12 @@ Your task is to generate a COMPLETE, VALID, SELF-CONTAINED HTML FILE.
   - **GAME OVER (Lost)**: Show "Game Over", Final Score, and the **MANDATORY SUBMISSION UI**.
 
 - **DIFFICULTY CONFIGURATION**:
+  - **DIFFICULTY CONFIGURATION**:
   - **Analyze the [OPTIONS] block in the prompt**:
-    - If `Timed Mode: YES`: Set a time limit (e.g., 15s/30s/60s based on difficulty).
+    - If `Timed Mode: YES`:
+      - Implement a **VISUAL TIMER BAR** (CSS progress bar) that shrinks from 100% to 0% width over the duration.
+      - Do NOT show a countdown number (e.g. "15"). Use the bar for visual impact.
+      - Set time limit (e.g., 15s/30s/60s) based on difficulty.
     - If `Timed Mode: NO`: Do NOT implement a timer. Remove "Time" from UI.
   - **INSTRUCTIONS TEXT**: In the "How to Play" section, **HARDCODE** the numbers.
     - Write: "You have 15 seconds..." NOT "You have {{time}} seconds...".
