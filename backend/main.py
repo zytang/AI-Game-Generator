@@ -117,6 +117,9 @@ class ScoreSubmission(BaseModel):
 
 @app.post("/submit-score")
 def submit_score(submission: ScoreSubmission):
+    if not kv_client.is_enabled():
+        raise HTTPException(status_code=503, detail="Leaderboard service unavailable (Missing Credentials)")
+
     try:
         kv_client.submit_score(submission.game_id, submission.player_name, submission.score)
         return {"status": "success"}

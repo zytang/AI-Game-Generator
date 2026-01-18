@@ -19,6 +19,9 @@ class KVClient:
         else:
             self.client = Redis(url=url, token=token)
 
+    def is_enabled(self):
+        return self.client is not None
+
     def submit_score(self, game_id: str, name: str, score: float):
         if not self.client:
             return None
