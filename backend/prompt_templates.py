@@ -60,9 +60,12 @@ Your task is to generate a COMPLETE, VALID, SELF-CONTAINED HTML FILE.
     - Input: `<input id="playerName" type="text" placeholder="Enter Name">`
     - Button: `<button onclick="submitScore()">Submit Score</button>`
   - **Behave**:
-    - On click -> `fetch('/submit-score', ...)`
-    - On success -> Disable button, show "Submitted!", then `fetch('/leaderboard/...')` to update table.
-    - On error -> Show simple "Connection error" text.
+    - **Define a function `refreshLeaderboard()`** that fetches `/leaderboard/${GAME_ID}` and renders the table.
+    - **Call `refreshLeaderboard()`** immediately when the game loads (in `initGame`).
+    - **On Submission Click**:
+      1. Call `fetch('/submit-score', ...)`
+      2. On Success: Disable button, show "Submitted!" text.
+      3. **CRITICAL**: Call `refreshLeaderboard()` immediately after success to show the new score.
 
 - **NAVIGATION**:
   - **FINAL SCREENS ONLY**: The "EXIT" or "MAIN MENU" button (linking to `/`) must ONLY appear on the "Victory" or "Game Over" screens.
