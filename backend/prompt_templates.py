@@ -60,7 +60,7 @@ Your task is to generate a COMPLETE, VALID, SELF-CONTAINED HTML FILE.
     - Input: `<input id="playerName" type="text" placeholder="Enter Name">`
     - Button: `<button onclick="submitScore()">Submit Score</button>`
   - **Behave**:
-    - **Define a function `refreshLeaderboard()`** that fetches `/leaderboard/${GAME_ID}` and renders the table.
+    - **Define a function `refreshLeaderboard()`** that fetches `/leaderboard/${{GAME_ID}}` and renders the table.
     - **Call `refreshLeaderboard()`** immediately when the game loads (in `initGame`).
     - **On Submission Click**:
       1. Call `fetch('/submit-score', ...)`
