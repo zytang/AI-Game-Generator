@@ -77,6 +77,7 @@ class KVClient:
                     formatted.append({"name": name, "score": score})
             return formatted
 
+        except Exception as e:
             print(f"ERROR Parsing Leaderboard: {e}")
             return []
 
