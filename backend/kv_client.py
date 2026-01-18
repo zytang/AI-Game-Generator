@@ -47,18 +47,27 @@ class KVClient:
 
             # Check structure of the first item
             first_item = results[0]
+            print(f"DEBUG: First item type: {type(first_item)}, content: {first_item}")
 
-            # Scenario A: List of ScoredMember objects (typical for upstash-redis python client)
+            # Scenario A: List of objects (ScoredMember from upstash-redis)
+            # We access .member and .score directly.
             if hasattr(first_item, 'member') and hasattr(first_item, 'score'):
-                return [{"name": str(item.member), "score": float(item.score)} for item in results]
+                return [{"name":str(item.member), "score": float(item.score)} for item in results]
 
-            # Scenario B: List of tuples/lists [(name, score), ...]
+            # Scenario B: List of dictionaries (JSON response sometimes)
+            if isinstance(first_item, dict):
+                 # Try to find common keys
+                 name = first_item.get('member') or first_item.get('name') or first_item.get('value')
+                 score = first_item.get('score')
+                 if name is not None and score is not None:
+                     return [{"name": str(item.get('member', item.get('name'))), "score": float(item.get('score', 0))} for item in results]
+
+            # Scenario C: List of tuples/lists [(name, score), ...]
             if isinstance(first_item, (list, tuple)):
                  return [{"name": str(item[0]), "score": float(item[1])} for item in results]
 
-            # Scenario C: Flat list [name, score, name, score]
-            # This happens if withscores=True returns a flat list (older redis-py behavior or raw)
-            # We assume it's flat if the first item is a string/bytes and the second is a number (or string number)
+            # Scenario D: Flat list [name, score, name, score]
+            # This is the "raw" Redis response for withscores=True
             formatted = []
             for i in range(0, len(results), 2):
                 if i + 1 < len(results):
