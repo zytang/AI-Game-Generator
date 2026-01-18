@@ -24,8 +24,8 @@ Your task is to generate a COMPLETE, VALID, SELF-CONTAINED HTML FILE.
     - If `Timed Mode: YES`: Set a time limit (e.g., 15s/30s/60s based on difficulty).
     - If `Timed Mode: NO`: Do NOT implement a timer. Remove "Time" from UI.
   - **INSTRUCTIONS TEXT**: In the "How to Play" section, **HARDCODE** the numbers.
-    - Write: "You have 15 seconds..." NOT "You have {time} seconds...".
-    - Write: "Score 70% to pass..." NOT "Score {pct}% to pass...".
+    - Write: "You have 15 seconds..." NOT "You have {{time}} seconds...".
+    - Write: "Score 70% to pass..." NOT "Score {{pct}}% to pass...".
     - Ensure these numbers match your Javascript logic.
 
 - **NAVIGATION & PROGRESSION**:
