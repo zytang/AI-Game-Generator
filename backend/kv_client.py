@@ -41,26 +41,30 @@ class KVClient:
             results = self.client.zrange(key, 0, limit - 1, desc=True, withscores=True)
             print(f"DEBUG: Leaderboard raw results: {results}") # Log for debugging
             
-            # Handle different return formats
-            formatted = []
+            # Clean up the parsing logic
             if not results:
                 return []
-                
-            # Case 1: List of tuples/lists/objects (standard)
-            # Check if first item is iterable and not a string
-            first = results[0]
-            if isinstance(first, (list, tuple)):
-                formatted = [{"name": str(r[0]), "score": float(r[1])} for r in results]
-            elif hasattr(first, 'member') and hasattr(first, 'score'):
-                 # Object style (ScoredMember)
-                 formatted = [{"name": r.member, "score": float(r.score)} for r in results]
-            else:
-                # Case 2: Flat list [member, score, member, score] (some clients)
-                # Iterate in chunks of 2
-                for i in range(0, len(results), 2):
-                    if i + 1 < len(results):
-                        formatted.append({"name": str(results[i]), "score": float(results[i+1])})
-            
+
+            # Check structure of the first item
+            first_item = results[0]
+
+            # Scenario A: List of ScoredMember objects (typical for upstash-redis python client)
+            if hasattr(first_item, 'member') and hasattr(first_item, 'score'):
+                return [{"name": str(item.member), "score": float(item.score)} for item in results]
+
+            # Scenario B: List of tuples/lists [(name, score), ...]
+            if isinstance(first_item, (list, tuple)):
+                 return [{"name": str(item[0]), "score": float(item[1])} for item in results]
+
+            # Scenario C: Flat list [name, score, name, score]
+            # This happens if withscores=True returns a flat list (older redis-py behavior or raw)
+            # We assume it's flat if the first item is a string/bytes and the second is a number (or string number)
+            formatted = []
+            for i in range(0, len(results), 2):
+                if i + 1 < len(results):
+                    name = str(results[i])
+                    score = float(results[i+1])
+                    formatted.append({"name": name, "score": score})
             return formatted
 
         except Exception as e:
