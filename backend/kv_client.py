@@ -77,8 +77,21 @@ class KVClient:
                     formatted.append({"name": name, "score": score})
             return formatted
 
-        except Exception as e:
             print(f"ERROR Parsing Leaderboard: {e}")
             return []
+
+    def save_game(self, game_id: str, html_content: str, ttl: int = 86400):
+        """Saves generated game HTML to Redis with 24h expiration."""
+        if not self.client:
+            return False
+        key = f"game_html:{game_id}"
+        return self.client.set(key, html_content, ex=ttl)
+
+    def get_game(self, game_id: str):
+        """Retrieves game HTML from Redis."""
+        if not self.client:
+            return None
+        key = f"game_html:{game_id}"
+        return self.client.get(key)
 
 kv_client = KVClient()

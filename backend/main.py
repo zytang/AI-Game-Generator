@@ -26,10 +26,22 @@ os.makedirs(GENERATED_GAMES_DIR, exist_ok=True)
 app.mount("/static", StaticFiles(directory=os.path.join(BASE_DIR, "static")), name="static")
 @app.get("/games/{filename}")
 def serve_game(filename: str):
+    # Extract ID. Filename format: game_{id}.html
+    game_id = filename.replace("game_", "").replace(".html", "")
+    
+    # 1. Try Redis first (Persistent Storage)
+    content = kv_client.get_game(game_id)
+    if content:
+        # Redis might return bytes or string depending on client config, ensure string for HTMLResponse
+        if isinstance(content, bytes):
+            content = content.decode('utf-8')
+        return HTMLResponse(content=content)
+
+    # 2. Fallback to File System (Ephemeral)
     file_path = os.path.join(GENERATED_GAMES_DIR, filename)
 
     if not os.path.exists(file_path):
-        raise HTTPException(status_code=404, detail="Game not found")
+        raise HTTPException(status_code=404, detail="Game not found or expired. Please generate a new one.")
 
     return FileResponse(
         file_path,
@@ -101,6 +113,13 @@ def generate_game(request: GameRequest):
 
         with open(file_path, "w", encoding="utf-8") as f:
             f.write(clean_html)
+
+        # Save to Redis (Persistent Storage)
+        try:
+            kv_client.save_game(game_id, clean_html)
+            print(f"Game saved to Redis: {game_id}")
+        except Exception as e:
+            print(f"Warning: Failed to save to Redis: {e}")
 
         return JSONResponse({
             "game_url": f"/games/{filename}",
