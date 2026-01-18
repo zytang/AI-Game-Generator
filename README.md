@@ -96,5 +96,25 @@ The game artifacts are single-file HTML applications. To edit content (e.g., fix
 3. **Edit**: Search for the text you want to change or modify the JavaScript `questions` array.
 4. **Save**: Save the file and open it in your browser to play the updated version.
 
+## 🎓 Instructor's Guide (Classroom Competition)
+Use this tool to create engaging "Game of the Day" challenges for your students.
+
+### 1. Create a Game
+Enter a prompt that specifies the topic, difficulty, and format.
+> **Example Prompt**: "Create a timed quiz about the French Revolution for college students. Include 3 levels of difficulty. Timed Mode: YES."
+
+### 2. Run the Competition (24-Hour Window)
+Once generated, the game link stays active for **24 hours**.
+- **Share**: Project the QR code or share the URL with your class.
+- **Compete**: Students play on their phones/laptops and submit scores.
+- **Rank**: Watch the Global Leaderboard populate in real-time to see who masters the material!
+- **Note**: After 24 hours, the link expires to keep the system clean.
+
+### 3. Keep the Game Forever
+To use the same game for future classes:
+- Click **"Download HTML"** immediately after generation.
+- Host this HTML file on your own LMS (Canvas, Blackboard), Google Drive, or personal website.
+- **Note**: The shared leaderboard requires the game to be hosted on the original server URL. Downloaded games work perfectly but will not sync to the global leaderboard.
+
 ---
 *Enhanced version based on a fork of [YashDewangan/AI-Game-Generator](https://github.com/yashdew3/AI-Game-Generator).*
