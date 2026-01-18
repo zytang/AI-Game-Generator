@@ -52,6 +52,8 @@ Your task is to generate a COMPLETE, VALID, SELF-CONTAINED HTML FILE.
   - **VIEWPORT**: Must include `<meta name="viewport" content="width=device-width, initial-scale=1.0">`.
   - **TOUCH TARGETS**: Buttons must be at least 44px height/width for touch.
   - **LAYOUT**: Use CSS Grid/Flexbox to ensure content stacks vertically on small screens. Text must be readable without zooming.
+  - **SCROLLING**: Main container must have `overflow-y: auto` to prevent content (like the Submit button) from being cut off on small screens.
+  - **WRAPPING**: The Player Name input and Submit button MUST wrap to new lines on mobile. Do NOT force them on the same line.
 
 - **SHARED LEADERBOARD & SUBMISSION (MANDATORY)**:
   - **SUBMISSION UI**: MUST appear on "Victory" and "Game Over" screens.
