@@ -38,7 +38,8 @@ class KVClient:
         # Get top scores (descending)
         # Get top scores (descending)
         try:
-            results = self.client.zrange(key, 0, limit - 1, desc=True, withscores=True)
+            # upstash-redis might not support desc=True in zrange. Use zrevrange instead.
+            results = self.client.zrevrange(key, 0, limit - 1, withscores=True)
             print(f"DEBUG: Leaderboard raw results: {results}") # Log for debugging
             
             # Clean up the parsing logic
