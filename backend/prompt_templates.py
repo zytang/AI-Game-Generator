@@ -29,6 +29,8 @@ Your task is to generate a COMPLETE, VALID, SELF-CONTAINED HTML FILE.
 - **ARCHITECTURE**: Use a single `gameState` object. Use generic `renderLevel()` and `showScreen()` functions.
 - **VISUALS & UI**:
   - **PREMIUM AESTHETICS**: Use modern glassmorphism (backdrop-filter: blur, gradients, rounded corners).
+  - **ACCESSIBILITY (CRITICAL)**: Ensure HIGH CONTRAST. Do NOT use white text on light backgrounds. Use dark text (#1a1a2e) on light cards, or white text on very dark backgrounds.
+  - **TYPOGRAPHY**: Center titles, but ALWAYS left-align (`text-align: left`) lists, instructions, and body text for readability.
   - **ANIMATIONS**: Use CSS animations for rewards, transitions, and interactions.
   - **LEADERBOARD**: Ensure the global leaderboard table is beautifully styled and prominent.
   - **NAVIGATION**: Navigation buttons (Next/Replay/Quit) must be clear, styled, and always accessible in the results screen.
