@@ -66,7 +66,9 @@ Your task is to generate a COMPLETE, VALID, SELF-CONTAINED HTML FILE.
     - Button: `<button onclick="submitScore()">Submit Score</button>`
   - **Behave**:
     - **Define a function `refreshLeaderboard()`** that fetches `/leaderboard/${{GAME_ID}}` and renders the table.
-    - **Call `refreshLeaderboard()`** immediately when the game loads (in `initGame`).
+      - **CRITICAL**: Use `try...catch`. If fetch fails, show "Leaderboard unavailable" in table, but **do NOT crash the game**.
+    - **Call `refreshLeaderboard()`** inside `initGame()`.
+      - **CRITICAL**: Ensure `initGame()` continues to setup UI/Listeners even if leaderboard fails (use `refreshLeaderboard().catch(...)` or `await` inside try/catch).
     - **On Submission Click**:
       1. Call `fetch('/submit-score', ...)`
       2. On Success: Disable button, show "Submitted!" text.
