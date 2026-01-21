@@ -81,6 +81,7 @@ Your task is to generate a COMPLETE, VALID, SELF-CONTAINED HTML FILE.
 - **SCORING SYSTEM (CRITICAL)**:
   - **STANDARD POINTS**: EXACTLY 100 points per correct answer. NO TIME BONUSES.
   - **TOTAL SCORE**: Max score = (Total Questions) * 100.
+  - **CUMULATIVE SCORING**: Do NOT reset `score` to 0 when starting a new level. Only reset on game start/replay.
   - **NO INFLATION**: random scores like 730 are strictly forbidden.
 
 - **LOGIC & DATA INTEGRITY**:
