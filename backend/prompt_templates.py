@@ -101,12 +101,12 @@ Your task is to generate a COMPLETE, VALID, SELF-CONTAINED HTML FILE.
 4. **WRAP DATA STRINGS**: Use DOUBLE QUOTES `"` for all JSON keys and string values to prevent single-quote escaping errors (e.g. "It's" will break single quotes).
 5. **GLOBAL ERROR HANDLER**: Wrap `initGame()` in a try-catch block:
    ```javascript
-   try {
+   try {{
        initGame();
-   } catch (e) {
+   }} catch (e) {{
        console.error("Critical Init Error:", e);
        alert("Game Error: " + e.message);
-   }
+   }}
    ```
 6. Ensure `startGame()` is defined in the GLOBAL scope (not inside another function).
 
