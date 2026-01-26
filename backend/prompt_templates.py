@@ -72,7 +72,13 @@ Your task is to generate a COMPLETE, VALID, SELF-CONTAINED HTML FILE.
     - **On Submission Click**:
       1. Call `fetch('/submit-score', ...)` with JSON: `{{ "game_id": GAME_ID, "player_name": "Name", "score": 100 }}` (Ensure score is a Number!).
       2. If `response.ok` is FALSE: `alert("Error: " + await response.text());` (Show the REAL error).
-      3. On Success: Disable button, show "Submitted!" text, and call `refreshLeaderboard()`.
+      3. On Success: 
+         - Disable button.
+         - Show "Submitted!" text in **BRIGHT GREEN** (#00ff00).
+         - Call `refreshLeaderboard()`.
+         - **SCROLL TO LEADERBOARD**: `document.getElementById('leaderboard-table').scrollIntoView({{ behavior: 'smooth' }});`
+    - **INPUT VISIBILITY**: The text input MUST have `background: #ffffff; color: #000000;` (Black text on White) for maximum readability.
+    - **LEADERBOARD VISIBILITY**: The Leaderboard Table MUST be rendered on the Results screen, below the submission UI.
 
 - **NAVIGATION**:
   - **FINAL SCREENS ONLY**: The "EXIT" or "MAIN MENU" button (linking to `/`) must ONLY appear on the "Victory" or "Game Over" screens.
