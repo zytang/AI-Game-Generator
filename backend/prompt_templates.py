@@ -34,6 +34,10 @@ Your task is to generate a COMPLETE, VALID, SELF-CONTAINED HTML FILE.
     - Ensure these numbers match your Javascript logic.
 
 - **NAVIGATION & PROGRESSION**:
+  - **CONTENT PROGRESSION (CRITICAL)**:
+    - **LEVEL 1 (Beginner)**: Focus on basic definitions, core concepts, and simple identification.
+    - **LEVEL 2 (Intermediate)**: Focus on application, comparisons, and more specific details.
+    - **LEVEL 3 (Advanced)**: Focus on complex analysis, specific statistics/dates, or obscure/niche knowledge.
   - After finishing a level, the results screen MUST show clear navigation buttons:
     - "NEXT LEVEL": Only enabled if the player passed the current level and there is a next level.
     - "REPLAY": To try the current level again.
