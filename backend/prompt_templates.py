@@ -24,6 +24,7 @@ Your task is to generate a COMPLETE, VALID, SELF-CONTAINED HTML FILE.
   - **Analyze the [OPTIONS] block in the prompt**:
     - If `Timed Mode: YES`:
       - Implement a **VISUAL TIMER BAR** (CSS progress bar) that shrinks from 100% to 0% width over the duration.
+      - **MOBILE VISIBILITY**: The timer bar MUST be sticky/fixed at the top of the game container or screen (`position: sticky; top: 0; z-index: 100;`), with `min-height: 10px`.
       - Do NOT show a countdown number (e.g. "15"). Use the bar for visual impact.
       - Set time limit (e.g., 15s/30s/60s) based on difficulty.
     - If `Timed Mode: NO`: Do NOT implement a timer. Remove "Time" from UI.
