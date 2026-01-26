@@ -70,9 +70,9 @@ Your task is to generate a COMPLETE, VALID, SELF-CONTAINED HTML FILE.
     - **Call `refreshLeaderboard()`** inside `initGame()`.
       - **CRITICAL**: Ensure `initGame()` continues to setup UI/Listeners even if leaderboard fails (use `refreshLeaderboard().catch(...)` or `await` inside try/catch).
     - **On Submission Click**:
-      1. Call `fetch('/submit-score', ...)`
-      2. On Success: Disable button, show "Submitted!" text.
-      3. **CRITICAL**: Call `refreshLeaderboard()` immediately after success to show the new score.
+      1. Call `fetch('/submit-score', ...)` with JSON: `{{ "game_id": GAME_ID, "player_name": "Name", "score": 100 }}` (Ensure score is a Number!).
+      2. If `response.ok` is FALSE: `alert("Error: " + await response.text());` (Show the REAL error).
+      3. On Success: Disable button, show "Submitted!" text, and call `refreshLeaderboard()`.
 
 - **NAVIGATION**:
   - **FINAL SCREENS ONLY**: The "EXIT" or "MAIN MENU" button (linking to `/`) must ONLY appear on the "Victory" or "Game Over" screens.
@@ -86,6 +86,7 @@ Your task is to generate a COMPLETE, VALID, SELF-CONTAINED HTML FILE.
 
 - **LOGIC & DATA INTEGRITY**:
   - **NO DUPLICATES**: Explicitly ensure all 4 answer options for a question are UNIQUE. No repeated questions.
+  - **RANDOMIZE ANSWERS (CRITICAL)**: The `options` array MUST be shuffled in JavaScript before rendering. Do not always place the correct answer first. Use a Fisher-Yates shuffle or `sort(() => Math.random() - 0.5)`.
   - **API CONTRACT**: `/leaderboard/${{GAME_ID}}` returns a JSON ARRAY: `[{{ name: "Player", score: 100 }}, ...]`.
   - Handle empty leaderboard arrays gracefully (show "No scores yet").
   - **ERROR HANDLING**: Log fetch errors to console. If leaderboard fails, show specific error message.

@@ -3,11 +3,11 @@
 [![FastAPI](https://img.shields.io/badge/FastAPI-0.95+-green.svg)](https://fastapi.tiangolo.com/)
 [![Python](https://img.shields.io/badge/Python-3.9+-blue.svg)](https://www.python.org/)
 [![Vercel](https://img.shields.io/badge/Deploy-Vercel-black.svg)](https://vercel.com/)
-[![Gemini](https://img.shields.io/badge/AI-Gemini_2.5_Flash-blue.svg)](https://deepmind.google/technologies/gemini/)
+[![Gemini](https://img.shields.io/badge/AI-Gemini_2.5_Pro-blue.svg)](https://deepmind.google/technologies/gemini/)
 
 An AI-powered web application that generates fully playable, high-fidelity educational HTML games. Now enhanced with **Shared Global Leaderboards**, **Multi-level Challenges**, and **Performance Tracking**.
 
-The system uses FastAPI (Python) and Google Gemini 2.5 Flash to create self-contained artifacts that run instantly in any browser.
+The system uses FastAPI (Python) and Google Gemini 2.5 Pro to create self-contained artifacts that run instantly in any browser.
 
 ## 🚀 New & Enhanced Features
 
@@ -24,7 +24,7 @@ The system uses FastAPI (Python) and Google Gemini 2.5 Flash to create self-cont
 - **Review Phase**: Interactive review of missed questions with explanations.
 - **Navigation**: Dedicated "Next Level", "Replay", and "Quit" flow.
 
-✅ **Gemini 2.5 Flash Integration**: Optimized for the latest model to provide faster generation and improved logic.
+✅ **Gemini 2.5 Pro Integration**: Optimized for the latest model to provide faster generation and improved logic.
 
 ## 🗂️ Updated Project Structure
 ```bash
@@ -32,7 +32,7 @@ ai-game-generator/
 │
 ├── backend/
 │   ├── main.py              # FastAPI app with leaderboard endpoints
-│   ├── gemini_client.py     # Gemini 2.5 API integration
+│   ├── gemini_client.py     # Gemini 2.5 Pro API integration
 │   ├── kv_client.py         # Vercel KV / Redis score persistence
 │   ├── prompt_templates.py  # Advanced multi-level + navigation prompts
 │   └── utils.py             # Output cleaning & placeholder injection
