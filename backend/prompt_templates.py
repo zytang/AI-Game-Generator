@@ -28,6 +28,14 @@ Your task is to generate a COMPLETE, VALID, SELF-CONTAINED HTML FILE.
       - Do NOT show a countdown number (e.g. "15"). Use the bar for visual impact.
       - Set time limit (e.g., 15s/30s/60s) based on difficulty.
     - If `Timed Mode: NO`: Do NOT implement a timer. Remove "Time" from UI.
+    - **DIFFICULTY MATRIX (CRITICAL)**:
+      - **Global Difficulty (Selected by User)** defines the **TARGET AUDIENCE**.
+        - `Easy`: Target Audience = Children/Beginners.
+        - `Medium`: Target Audience = Students/General Public.
+        - `Hard`: Target Audience = Experts/Professionals.
+      - **Game Levels (1, 2, 3)** define the **PROGRESSION CURVE** within that audience.
+        - *Example (Easy)*: Level 1 = "What is a cat?", Level 3 = "Identify a Siamese cat".
+        - *Example (Hard)*: Level 1 = "Bio-mechanics of feline agility", Level 3 = "Evolutionary divergence of Panthera leo".
   - **INSTRUCTIONS TEXT**: In the "How to Play" section, **HARDCODE** the numbers.
     - Write: "You have 15 seconds..." NOT "You have {{time}} seconds...".
     - Write: "Score 70% to pass..." NOT "Score {{pct}}% to pass...".
