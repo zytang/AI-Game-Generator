@@ -1,0 +1,693 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Solar System Quiz</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-color: #0f0c29;
+            --primary-color: #4a00e0;
+            --secondary-color: #8e2de2;
+            --text-light: #f0f0f0;
+            --text-dark: #1a1a2e;
+            --card-bg: rgba(255, 255, 255, 0.1);
+            --border-color: rgba(255, 255, 255, 0.2);
+            --success-color: #28a745;
+            --danger-color: #dc3545;
+            --disabled-color: #6c757d;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, var(--bg-color), #302b63, #24243e);
+            color: var(--text-light);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 1rem;
+            overflow-y: auto;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 800px;
+            padding: 2rem;
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+            overflow-y: auto;
+            max-height: 95vh;
+        }
+
+        .screen {
+            display: none;
+            animation: fadeIn 0.5s ease-in-out;
+        }
+
+        .screen.active {
+            display: block;
+        }
+
+        h1, h2, h3 {
+            text-align: center;
+            margin-bottom: 1rem;
+            font-weight: 700;
+        }
+        
+        h1 { font-size: 2.5rem; }
+        h2 { font-size: 2rem; }
+        h3 { font-size: 1.5rem; }
+
+        p, ul {
+            text-align: left;
+            margin-bottom: 1.5rem;
+            line-height: 1.6;
+        }
+
+        ul {
+            list-style-position: inside;
+            padding-left: 0;
+        }
+
+        .btn {
+            display: block;
+            width: 100%;
+            padding: 1rem;
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--text-light);
+            background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+            text-align: center;
+            text-decoration: none;
+            min-height: 48px;
+        }
+
+        .btn:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .btn:disabled {
+            background: var(--disabled-color);
+            cursor: not-allowed;
+        }
+
+        .button-group {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            margin-top: 1.5rem;
+        }
+
+        /* Game Screen */
+        #game-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+            font-weight: 600;
+        }
+
+        #timer-container {
+            width: 100%;
+            height: 10px;
+            background-color: rgba(0, 0, 0, 0.3);
+            border-radius: 5px;
+            overflow: hidden;
+            margin-bottom: 1.5rem;
+        }
+
+        #timer-bar {
+            height: 100%;
+            width: 100%;
+            background: linear-gradient(90deg, var(--success-color), #f9d423);
+            border-radius: 5px;
+            transition: width 0.1s linear;
+        }
+
+        #question-text {
+            font-size: 1.4rem;
+            text-align: center;
+            margin-bottom: 2rem;
+            min-height: 80px;
+        }
+
+        #options-container {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 1rem;
+        }
+
+        .option-btn {
+            background: rgba(255, 255, 255, 0.15);
+            border: 1px solid var(--border-color);
+            text-align: left;
+        }
+        
+        .option-btn.correct {
+            background-color: var(--success-color);
+            animation: pulse 0.5s;
+        }
+        .option-btn.incorrect {
+            background-color: var(--danger-color);
+            animation: shake 0.5s;
+        }
+
+        /* Results Screen */
+        #results-score {
+            font-size: 1.8rem;
+            font-weight: 700;
+            text-align: center;
+            margin: 1.5rem 0;
+            color: #f9d423;
+        }
+
+        /* Submission and Leaderboard */
+        .submission-container {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            margin-top: 2rem;
+            padding-top: 1.5rem;
+            border-top: 1px solid var(--border-color);
+        }
+
+        .submission-container input {
+            width: 100%;
+            padding: 0.8rem;
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+            background: rgba(0,0,0,0.2);
+            color: var(--text-light);
+            font-size: 1rem;
+        }
+
+        .submission-container input::placeholder {
+            color: rgba(255, 255, 255, 0.6);
+        }
+
+        #leaderboard-container {
+            margin-top: 2rem;
+        }
+
+        #leaderboard-table {
+            width: 100%;
+            text-align: left;
+            border-collapse: collapse;
+        }
+
+        #leaderboard-table th, #leaderboard-table td {
+            padding: 12px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        #leaderboard-table th {
+            font-weight: 600;
+        }
+
+        #leaderboard-table td:last-child {
+            text-align: right;
+            font-weight: bold;
+        }
+        
+        #leaderboard-table .rank { width: 15%; }
+        #leaderboard-table .name { width: 55%; }
+        #leaderboard-table .score { width: 30%; }
+
+        /* Animations */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: scale(0.95); }
+            to { opacity: 1; transform: scale(1); }
+        }
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
+            20%, 40%, 60%, 80% { transform: translateX(5px); }
+        }
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+
+        /* Mobile Responsiveness */
+        @media (min-width: 600px) {
+            .button-group {
+                flex-direction: row;
+                justify-content: center;
+            }
+            .button-group .btn {
+                width: auto;
+                min-width: 150px;
+            }
+            #options-container {
+                grid-template-columns: 1fr 1fr;
+            }
+            .submission-container {
+                flex-direction: row;
+            }
+            .submission-container input {
+                flex-grow: 1;
+            }
+            .submission-container button {
+                width: auto;
+                min-width: 150px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <!-- Start Screen -->
+        <div id="start-screen" class="screen active">
+            <h1>Solar System Quiz</h1>
+            <h3>How to Play</h3>
+            <p>Test your knowledge about our solar system. The quiz has 3 levels of increasing difficulty.</p>
+            <ul>
+                <li>You have 15 seconds per question.</li>
+                <li>Score 70% to pass each level and advance.</li>
+                <li>Your score is cumulative across all levels.</li>
+            </ul>
+            <button class="btn" onclick="startGame()">Start Game</button>
+            <div id="leaderboard-container-start">
+                <h3 style="margin-top: 2rem;">Leaderboard</h3>
+                <table id="leaderboard-table-start">
+                    <thead>
+                        <tr>
+                            <th class="rank">Rank</th>
+                            <th class="name">Name</th>
+                            <th class="score">Score</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- Leaderboard data will be populated here -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Game Screen -->
+        <div id="game-screen" class="screen">
+            <div id="game-header">
+                <span id="level-indicator">Level 1/3</span>
+                <span id="score-indicator">Score: 0</span>
+            </div>
+            <div id="timer-container">
+                <div id="timer-bar"></div>
+            </div>
+            <h2 id="question-text"></h2>
+            <div id="options-container"></div>
+        </div>
+
+        <!-- Results Screen -->
+        <div id="results-screen" class="screen">
+            <h2 id="results-title"></h2>
+            <p id="results-message"></p>
+            <p id="results-score"></p>
+            <div id="submission-ui" style="display: none;">
+                <h3>Submit Your Score</h3>
+                <div class="submission-container">
+                    <input type="text" id="playerName" placeholder="Enter Your Name" maxlength="20">
+                    <button id="submit-score-btn" class="btn" onclick="submitScore()">Submit</button>
+                </div>
+            </div>
+            <div class="button-group" id="results-nav"></div>
+            <div id="leaderboard-container-results">
+                <h3 style="margin-top: 2rem;">Leaderboard</h3>
+                <table id="leaderboard-table-results">
+                    <thead>
+                        <tr>
+                            <th class="rank">Rank</th>
+                            <th class="name">Name</th>
+                            <th class="score">Score</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- Leaderboard data will be populated here -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const GAME_ID = "debug_repro_id"; // This will be replaced by the server
+
+        const gameState = {
+            currentLevel: 1,
+            totalLevels: 3,
+            score: 0,
+            currentQuestionIndex: 0,
+            questions: [],
+            timer: null,
+            timeLimit: 15, // seconds
+            gameActive: false,
+        };
+
+        // DOM Elements
+        const screens = {
+            start: document.getElementById('start-screen'),
+            game: document.getElementById('game-screen'),
+            results: document.getElementById('results-screen'),
+        };
+
+        const levelIndicator = document.getElementById('level-indicator');
+        const scoreIndicator = document.getElementById('score-indicator');
+        const timerBar = document.getElementById('timer-bar');
+        const questionText = document.getElementById('question-text');
+        const optionsContainer = document.getElementById('options-container');
+        
+        const resultsTitle = document.getElementById('results-title');
+        const resultsMessage = document.getElementById('results-message');
+        const resultsScore = document.getElementById('results-score');
+        const resultsNav = document.getElementById('results-nav');
+        const submissionUI = document.getElementById('submission-ui');
+        const playerNameInput = document.getElementById('playerName');
+        const submitScoreBtn = document.getElementById('submit-score-btn');
+
+        // --- QUESTION GENERATOR ---
+        function generateQuestions(level) {
+            const allQuestions = [
+                // Level 1
+                [
+                    { q: "Which is the largest planet in our Solar System?", a: "Jupiter", o: ["Earth", "Saturn", "Mars"] },
+                    { q: "Which planet is known as the Red Planet?", a: "Mars", o: ["Venus", "Jupiter", "Mercury"] },
+                    { q: "What is the name of the star at the center of our Solar System?", a: "The Sun", o: ["Alpha Centauri", "Sirius", "Proxima Centauri"] },
+                    { q: "Which planet is closest to the Sun?", a: "Mercury", o: ["Venus", "Earth", "Mars"] },
+                    { q: "How many planets are in our Solar System?", a: "8", o: ["7", "9", "10"] },
+                ],
+                // Level 2
+                [
+                    { q: "Which planet has the most prominent ring system?", a: "Saturn", o: ["Jupiter", "Uranus", "Neptune"] },
+                    { q: "What is the name of Earth's only natural satellite?", a: "The Moon", o: ["Phobos", "Europa", "Titan"] },
+                    { q: "Which planet is famous for its Great Red Spot, a giant storm?", a: "Jupiter", o: ["Saturn", "Neptune", "Mars"] },
+                    { q: "Which two planets are known as 'ice giants'?", a: "Uranus and Neptune", o: ["Jupiter and Saturn", "Earth and Venus", "Mars and Mercury"] },
+                    { q: "What is the name of the dwarf planet that was once considered the ninth planet?", a: "Pluto", o: ["Ceres", "Eris", "Makemake"] },
+                ],
+                // Level 3
+                [
+                    { q: "What is the largest moon in the Solar System, orbiting Jupiter?", a: "Ganymede", o: ["Titan", "Callisto", "Io"] },
+                    { q: "Which planet rotates on its side, almost at a 90-degree angle?", a: "Uranus", o: ["Neptune", "Saturn", "Venus"] },
+                    { q: "What is the name of the largest volcano in the Solar System, located on Mars?", a: "Olympus Mons", o: ["Mauna Kea", "Mount St. Helens", "Vesuvius"] },
+                    { q: "Which planet has the hottest surface temperature, even hotter than Mercury?", a: "Venus", o: ["Mars", "Earth", "Jupiter"] },
+                    { q: "What is the name of the main asteroid belt's location?", a: "Between Mars and Jupiter", o: ["Between Earth and Mars", "Beyond Neptune", "Between Jupiter and Saturn"] },
+                ]
+            ];
+
+            return allQuestions[level - 1].map(qData => {
+                const options = [...qData.o, qData.a];
+                // Shuffle options
+                for (let i = options.length - 1; i > 0; i--) {
+                    const j = Math.floor(Math.random() * (i + 1));
+                    [options[i], options[j]] = [options[j], options[i]];
+                }
+                return {
+                    question: qData.q,
+                    options: options,
+                    correctAnswer: qData.a
+                };
+            });
+        }
+
+        // --- GAME FLOW ---
+        function showScreen(screenId) {
+            Object.values(screens).forEach(screen => screen.classList.remove('active'));
+            screens[screenId].classList.add('active');
+        }
+
+        function startGame() {
+            gameState.score = 0;
+            gameState.currentLevel = 1;
+            loadLevel(1);
+        }
+
+        function loadLevel(level) {
+            gameState.currentLevel = level;
+            gameState.currentQuestionIndex = 0;
+            gameState.questions = generateQuestions(level);
+            gameState.gameActive = true;
+            
+            levelIndicator.textContent = `Level ${gameState.currentLevel}/${gameState.totalLevels}`;
+            scoreIndicator.textContent = `Score: ${gameState.score}`;
+
+            showScreen('game');
+            renderQuestion();
+        }
+
+        function renderQuestion() {
+            if (gameState.currentQuestionIndex >= gameState.questions.length) {
+                endLevel('completed');
+                return;
+            }
+
+            const question = gameState.questions[gameState.currentQuestionIndex];
+            questionText.textContent = question.question;
+            optionsContainer.innerHTML = '';
+
+            question.options.forEach(option => {
+                const button = document.createElement('button');
+                button.textContent = option;
+                button.classList.add('btn', 'option-btn');
+                button.onclick = () => selectAnswer(option);
+                optionsContainer.appendChild(button);
+            });
+
+            startTimer();
+        }
+
+        function selectAnswer(selectedOption) {
+            if (!gameState.gameActive) return;
+            gameState.gameActive = false; // Prevent multiple clicks
+            clearInterval(gameState.timer);
+
+            const question = gameState.questions[gameState.currentQuestionIndex];
+            const isCorrect = selectedOption === question.correctAnswer;
+            
+            Array.from(optionsContainer.children).forEach(btn => {
+                btn.disabled = true;
+                if (btn.textContent === question.correctAnswer) {
+                    btn.classList.add('correct');
+                } else if (btn.textContent === selectedOption) {
+                    btn.classList.add('incorrect');
+                }
+            });
+
+            if (isCorrect) {
+                gameState.score += 100;
+                scoreIndicator.textContent = `Score: ${gameState.score}`;
+            }
+
+            setTimeout(() => {
+                gameState.currentQuestionIndex++;
+                gameState.gameActive = true;
+                renderQuestion();
+            }, 1500);
+        }
+
+        function startTimer() {
+            clearInterval(gameState.timer);
+            let timeRemaining = gameState.timeLimit;
+            timerBar.style.transition = 'none';
+            timerBar.style.width = '100%';
+            
+            // Force reflow to apply the reset width immediately
+            void timerBar.offsetWidth; 
+            
+            timerBar.style.transition = `width ${gameState.timeLimit}s linear`;
+            timerBar.style.width = '0%';
+
+            gameState.timer = setTimeout(() => {
+                if(gameState.gameActive) {
+                    timeUp();
+                }
+            }, gameState.timeLimit * 1000);
+        }
+
+        function timeUp() {
+            if (!gameState.gameActive) return;
+            gameState.gameActive = false; // Prevent selection after time is up
+
+            Array.from(optionsContainer.children).forEach(btn => {
+                btn.disabled = true;
+                if (btn.textContent === gameState.questions[gameState.currentQuestionIndex].correctAnswer) {
+                    btn.classList.add('correct');
+                }
+            });
+
+            setTimeout(() => {
+                gameState.currentQuestionIndex++;
+                gameState.gameActive = true;
+                renderQuestion();
+            }, 1500);
+        }
+
+        function endLevel(reason) {
+            clearInterval(gameState.timer);
+            gameState.gameActive = false;
+
+            const questionsInLevel = gameState.questions.length;
+            const correctAnswers = (gameState.score - ( (gameState.currentLevel - 1) * questionsInLevel * 100) ) / 100;
+            const passPercentage = (correctAnswers / questionsInLevel) * 100;
+            const passed = passPercentage >= 70;
+
+            let title, message;
+            resultsNav.innerHTML = '';
+            submissionUI.style.display = 'none';
+
+            if (passed && gameState.currentLevel < gameState.totalLevels) {
+                // Intermediate Level - Passed
+                title = `Level ${gameState.currentLevel} Complete!`;
+                message = `You scored ${passPercentage.toFixed(0)}% on this level. Well done!`;
+                resultsNav.innerHTML = `
+                    <button class="btn" onclick="loadLevel(${gameState.currentLevel + 1})">Next Level</button>
+                    <button class="btn" onclick="loadLevel(${gameState.currentLevel})">Replay Level</button>
+                `;
+            } else if (passed && gameState.currentLevel === gameState.totalLevels) {
+                // Final Level - Victory
+                title = 'Victory!';
+                message = 'You have conquered the Solar System Quiz!';
+                submissionUI.style.display = 'block';
+                resultsNav.innerHTML = `
+                    <button class="btn" onclick="startGame()">Play Again</button>
+                    <a href="/" class="btn">Main Menu</a>
+                `;
+            } else {
+                // Failed Level or Game Over
+                title = 'Game Over';
+                message = `You scored ${passPercentage.toFixed(0)}% on level ${gameState.currentLevel}, but you needed 70% to pass.`;
+                submissionUI.style.display = 'block';
+                resultsNav.innerHTML = `
+                    <button class="btn" onclick="startGame()">Try Again</button>
+                    <a href="/" class="btn">Main Menu</a>
+                `;
+            }
+
+            resultsTitle.textContent = title;
+            resultsMessage.textContent = message;
+            resultsScore.textContent = `Final Score: ${gameState.score}`;
+            showScreen('results');
+            refreshLeaderboard(); // Always show leaderboard on results
+        }
+
+        // --- LEADERBOARD ---
+        async function refreshLeaderboard() {
+            const tables = [
+                document.querySelector('#leaderboard-table-start tbody'),
+                document.querySelector('#leaderboard-table-results tbody')
+            ];
+            
+            tables.forEach(tbody => {
+                if(tbody) tbody.innerHTML = '<tr><td colspan="3">Loading...</td></tr>';
+            });
+
+            try {
+                const response = await fetch(`/leaderboard/${GAME_ID}`);
+                if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+                const scores = await response.json();
+
+                const renderTable = (tbody) => {
+                    tbody.innerHTML = '';
+                    if (scores.length === 0) {
+                        tbody.innerHTML = '<tr><td colspan="3">No scores yet. Be the first!</td></tr>';
+                    } else {
+                        scores.slice(0, 10).forEach((entry, index) => {
+                            const row = tbody.insertRow();
+                            row.innerHTML = `
+                                <td class="rank">${index + 1}</td>
+                                <td class="name">${escapeHTML(entry.name)}</td>
+                                <td class="score">${entry.score}</td>
+                            `;
+                        });
+                    }
+                };
+                
+                tables.forEach(renderTable);
+
+            } catch (error) {
+                console.error('Failed to fetch leaderboard:', error);
+                tables.forEach(tbody => {
+                    if(tbody) tbody.innerHTML = '<tr><td colspan="3">Leaderboard unavailable</td></tr>';
+                });
+            }
+        }
+
+        async function submitScore() {
+            const playerName = playerNameInput.value.trim();
+            if (!playerName) {
+                alert('Please enter your name.');
+                return;
+            }
+
+            submitScoreBtn.disabled = true;
+            submitScoreBtn.textContent = 'Submitting...';
+
+            try {
+                const response = await fetch('/submit-score', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        game_id: GAME_ID,
+                        player_name: playerName,
+                        score: gameState.score
+                    }),
+                });
+
+                if (!response.ok) throw new Error('Submission failed');
+                
+                submitScoreBtn.textContent = 'Submitted!';
+                playerNameInput.disabled = true;
+                await refreshLeaderboard();
+
+            } catch (error) {
+                console.error('Failed to submit score:', error);
+                submitScoreBtn.textContent = 'Submission Failed';
+                setTimeout(() => {
+                    submitScoreBtn.disabled = false;
+                    submitScoreBtn.textContent = 'Submit';
+                }, 2000);
+            }
+        }
+        
+        function escapeHTML(str) {
+            return str.replace(/[&<>"']/g, function(match) {
+                return {
+                    '&': '&amp;',
+                    '<': '&lt;',
+                    '>': '&gt;',
+                    '"': '&quot;',
+                    "'": '&#39;'
+                }[match];
+            });
+        }
+
+        // --- INITIALIZATION ---
+        function initGame() {
+            showScreen('start');
+            refreshLeaderboard().catch(err => {
+                console.error("Initial leaderboard fetch failed, but game is starting anyway.", err);
+            });
+        }
+
+        initGame();
+    </script>
+</body>
+</html>

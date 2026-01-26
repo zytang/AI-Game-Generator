@@ -97,8 +97,18 @@ Your task is to generate a COMPLETE, VALID, SELF-CONTAINED HTML FILE.
 
 **STRICT FORMATTING**: 
 1. Output ONLY raw HTML (no markdown).
-2. The JavaScript MUST be the LAST tag in the <body>.
 3. The JavaScript MUST contain a single `initGame()` call at the bottom.
+4. **WRAP DATA STRINGS**: Use DOUBLE QUOTES `"` for all JSON keys and string values to prevent single-quote escaping errors (e.g. "It's" will break single quotes).
+5. **GLOBAL ERROR HANDLER**: Wrap `initGame()` in a try-catch block:
+   ```javascript
+   try {
+       initGame();
+   } catch (e) {
+       console.error("Critical Init Error:", e);
+       alert("Game Error: " + e.message);
+   }
+   ```
+6. Ensure `startGame()` is defined in the GLOBAL scope (not inside another function).
 
 USER GAME REQUEST:
 {user_prompt}
