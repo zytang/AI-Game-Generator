@@ -82,39 +82,45 @@ This project is optimized for Vercel deployment. To enable the shared leaderboar
    ```
 
 ## 🕹️ How to Play
-
 1. **Describe**: Enter a prompt (e.g., "Space-themed multiplication for 5th graders").
-2. **Generate**: The AI designs a multi-level game with premium aesthetics.
-3. **Compete**: Scan the QR code to play on mobile. Submit your score to the **Global Leaderboard** and see how you rank against other students!
+2. **Generate**: The AI designs a multi-level game with premium aesthetics (24-hour draft link).
+3. **Draft**: The game is active for 24 hours. Play it, test it, or download it.
+4. **Publish**: Click **"☁️ Publish"** to extend the game's life to **7 Days** and create a permanent shareable QR code for students.
 
-## 🛠️ Modifying Generated Games
+## 🛠️ Advanced Features
 
-The game artifacts are single-file HTML applications. To edit content (e.g., fix a typo or change a question):
+### 📂 Import & Resume
+Don't fear losing your prompt!
+1. **Save HTML**: Download your game file.
+2. **Import**: Upload it back into the generator.
+3. **Restore**: The system automatically extracting your prompt, difficulty, and settings.
+4. **Regenerate or Publish**: You can either generate a new version or publish the exact file you imported.
 
-1. **Download**: Click the "Save HTML" button after generation.
-2. **Open**: Open the `.html` file in any text editor (Notepad, VS Code, etc.).
-3. **Edit**: Search for the text you want to change or modify the JavaScript `questions` array.
-4. **Save**: Save the file and open it in your browser to play the updated version.
+### ☁️ Publishing for Students
+To share a game with a class:
+1. **Generate** or **Import** a game you like.
+2. **Click "Publish"**:
+   - Uploads the specific game file to the cloud.
+   - **Retention**: 7 Days (vs 24h for drafts).
+   - **QR Code**: Updates to a live server link.
+3. **Share**: Students scan the QR code to play on mobile. Scores sync to the **Global Leaderboard**.
 
 ## 🎓 Instructor's Guide (Classroom Competition)
-Use this tool to create engaging "Game of the Day" challenges for your students.
+Use this tool to create engaging "Game of the Day" challenges.
 
 ### 1. Create a Game
-Enter a prompt that specifies the topic, difficulty, and format.
-> **Example Prompt**: "Create a timed quiz about the French Revolution for college students. Include 3 levels of difficulty. Timed Mode: YES."
+Enter a prompt: "Create a timed quiz about the French Revolution. Include 3 levels. Timed Mode: YES."
 
-### 2. Run the Competition (24-Hour Window)
-Once generated, the game link stays active for **24 hours**.
-- **Share**: Project the QR code or share the URL with your class.
-- **Compete**: Students play on their phones/laptops and submit scores.
-- **Rank**: Watch the Global Leaderboard populate in real-time to see who masters the material!
-- **Note**: After 24 hours, the link expires to keep the system clean.
+### 2. Verify & Publish
+- Test the game yourself.
+- If you like it, click **"☁️ Publish"**.
+- This gives you a **7-Day Window** for the assignment.
 
-### 3. Keep the Game Forever
-To use the same game for future classes:
-- Click **"Download HTML"** immediately after generation.
-- Host this HTML file on your own LMS (Canvas, Blackboard), Google Drive, or personal website.
-- **Note**: The shared leaderboard requires the game to be hosted on the original server URL. Downloaded games work perfectly but will not sync to the global leaderboard.
+### 3. Run the Competition
+- **Share**: Project the QR code.
+- **Compete**: Students play on their phones.
+- **Rank**: Watch the Global Leaderboard populate in real-time.
+- **Save**: Download the HTML file to keep a permanent offline copy for your records.
 
 ---
 *Enhanced version based on a fork of [YashDewangan/AI-Game-Generator](https://github.com/yashdew3/AI-Game-Generator).*

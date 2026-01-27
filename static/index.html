@@ -45,7 +45,20 @@
                 </div>
             </div>
 
-            <button id="genBtn" class="btn-generate" onclick="generateGame()">Generate Magic</button>
+            <div class="button-group" style="display: flex; gap: 15px; margin-top: 25px;">
+                <button id="genBtn" class="btn-generate" onclick="generateGame()" style="flex: 2;">Generate
+                    Magic</button>
+                <input type="file" id="importFile" accept=".html" style="display: none;"
+                    onchange="handleImport(this.files)">
+                <button id="importBtn" class="btn-import" onclick="document.getElementById('importFile').click()"
+                    style="flex: 1; background: rgba(255,255,255,0.1); border: 1px solid var(--glass-border); border-radius: 15px; color: white; cursor: pointer; font-weight: 600; font-size: 1.1rem; transition: all 0.3s ease;">
+                    📂 Import
+                </button>
+                <button id="publishBtn" onclick="publishGame()"
+                    style="display: none; flex: 1; background: rgba(255, 215, 0, 0.1); border: 1px solid rgba(255, 215, 0, 0.3); border-radius: 15px; color: #ffd700; cursor: pointer; font-weight: 600; font-size: 1.1rem; transition: all 0.3s ease;">
+                    ☁️ Publish
+                </button>
+            </div>
 
             <div id="status" class="subtitle"></div>
 
@@ -75,6 +88,8 @@
         const promptInput = document.getElementById("promptInput");
         const badgeContainer = document.getElementById("badge-container");
         const downloadLink = document.getElementById("downloadLink");
+        const publishBtn = document.getElementById("publishBtn");
+        let importedHtmlContent = "";
 
         async function generateGame() {
             let prompt = promptInput.value;
@@ -85,9 +100,6 @@
                 showError("Please describe your game first!");
                 return;
             }
-
-            // Append options to prompt
-            prompt += `\n\n[OPTIONS]\nDifficulty: ${difficulty}\nTimed Mode: ${isTimed ? "YES" : "NO"}`;
 
             // UI Feedback
             genBtn.disabled = true;
@@ -103,7 +115,11 @@
                     headers: {
                         "Content-Type": "application/json"
                     },
-                    body: JSON.stringify({ prompt })
+                    body: JSON.stringify({
+                        prompt: prompt,
+                        difficulty: difficulty,
+                        is_timed: isTimed
+                    })
                 });
 
                 const data = await response.json();
@@ -116,33 +132,22 @@
 
                 // Generate QR Code
                 const origin = window.location.origin;
-                // Clean double slashes just in case, though usually not needed if backend returns /games/...
                 const gamePath = generatedGameUrl.startsWith('/') ? generatedGameUrl : '/' + generatedGameUrl;
                 const fullUrl = `${origin}${gamePath}`;
 
-                const qrContainer = document.getElementById("qrcode");
-                qrContainer.innerHTML = ""; // Clear previous
+                generateQR(fullUrl);
 
-                // Debug log
-                console.log("Generating QR for:", fullUrl);
-
-                // Small delay to ensure container is rendered
-                setTimeout(() => {
-                    try {
-                        new QRCode(qrContainer, {
-                            text: fullUrl,
-                            width: 160,
-                            height: 160,
-                            colorDark: "#ffffff",
-                            colorLight: "#000000", /* Changed to black background for better contrast if transparent fails? No, keep transparent but ensure colorDark is visible */
-                            colorLight: "transparent",
-                            correctLevel: QRCode.CorrectLevel.M // Lower correction level makes it less dense/easier to scan
-                        });
-                    } catch (e) {
-                        console.error("QR Code generation error:", e);
-                        qrContainer.textContent = "Error generating QR code";
+                // Need to fetch the content so we can publish it immediately if desired
+                try {
+                    const contentRes = await fetch(generatedGameUrl);
+                    if (contentRes.ok) {
+                        importedHtmlContent = await contentRes.text();
+                        publishBtn.style.display = "block";
+                        publishBtn.textContent = "☁️ Publish (Extend to 7 Days)";
                     }
-                }, 100);
+                } catch (e) {
+                    console.error("Failed to pre-fetch for publish:", e);
+                }
 
                 // Success State
                 status.textContent = "Your world has been created!";
@@ -165,6 +170,94 @@
             }
         }
 
+        function handleImport(files) {
+            if (files.length === 0) return;
+
+            const file = files[0];
+            const reader = new FileReader();
+
+            reader.onload = function (e) {
+                const htmlContent = e.target.result;
+                importedHtmlContent = htmlContent;
+                const parser = new DOMParser();
+                const doc = parser.parseFromString(htmlContent, 'text/html');
+
+                // 1. Extract Metadata
+                const metaScript = doc.getElementById('game-metadata');
+                let metaFound = false;
+
+                if (metaScript) {
+                    try {
+                        const metadata = JSON.parse(metaScript.textContent);
+
+                        // Populate Inputs
+                        if (metadata.prompt) promptInput.value = metadata.prompt;
+                        if (metadata.difficulty) document.getElementById("difficultySelect").value = metadata.difficulty;
+                        if (typeof metadata.is_timed !== 'undefined') document.getElementById("timerToggle").checked = metadata.is_timed;
+
+                        status.textContent = `Game Imported! Created: ${new Date(metadata.generated_at).toLocaleDateString()}`;
+                        status.style.color = "#00d2ff";
+                        metaFound = true;
+
+                    } catch (err) {
+                        console.error("Metadata parse error", err);
+                    }
+                }
+
+                if (!metaFound) {
+                    status.textContent = "Imported legacy game (No metadata found)";
+                    status.style.color = "var(--text-dim)";
+                }
+
+                badgeContainer.innerHTML = '<span class="success-badge" style="background: rgba(0, 210, 255, 0.1); color: #00d2ff;">📂 Game Loaded</span>';
+
+                // 2. Enable "Play Now" immediately with Blob URL
+                const blob = new Blob([htmlContent], { type: 'text/html' });
+                generatedGameUrl = URL.createObjectURL(blob);
+
+                // Show Play Section
+                playSection.style.display = "block";
+
+                // Update QR to point to something? 
+                // Since it's a blob URL, it won't work on mobile unless we upload it.
+                // For now, let's just clear QR or show a message.
+                const qrContainer = document.getElementById("qrcode");
+                qrContainer.innerHTML = "<span style='font-size:0.8rem; opacity:0.7;'>Mobile play unavailable for local imports</span>";
+
+                // Set download link to blob
+                downloadLink.href = generatedGameUrl;
+                downloadLink.download = file.name;
+                downloadLink.style.display = "inline-flex";
+
+                // Reset file input
+                document.getElementById('importFile').value = '';
+
+                // Show Publish Button
+                publishBtn.style.display = "block";
+            };
+
+            reader.readAsText(file);
+        }
+
+        function generateQR(fullUrl) {
+            const qrContainer = document.getElementById("qrcode");
+            qrContainer.innerHTML = "";
+            setTimeout(() => {
+                try {
+                    new QRCode(qrContainer, {
+                        text: fullUrl,
+                        width: 160,
+                        height: 160,
+                        colorDark: "#ffffff",
+                        colorLight: "transparent",
+                        correctLevel: QRCode.CorrectLevel.M
+                    });
+                } catch (e) {
+                    console.error("QR Error", e);
+                }
+            }, 100);
+        }
+
         function showError(msg) {
             status.textContent = msg;
             status.style.color = "#ff4d4d";
@@ -172,7 +265,12 @@
 
         function playGame() {
             if (generatedGameUrl) {
-                window.open(generatedGameUrl + "?t=" + Date.now(), "_blank");
+                // Blob URLs are local and don't need cache busting (and don't support query params)
+                if (generatedGameUrl.startsWith('blob:')) {
+                    window.open(generatedGameUrl, "_blank");
+                } else {
+                    window.open(generatedGameUrl + "?t=" + Date.now(), "_blank");
+                }
             }
         }
 
@@ -180,9 +278,60 @@
         promptInput.addEventListener('focus', () => {
             document.querySelector('.glass-card').style.boxShadow = "0 25px 50px rgba(0, 210, 255, 0.1)";
         });
-        promptInput.addEventListener('blur', () => {
-            document.querySelector('.glass-card').style.boxShadow = "0 25px 50px rgba(0, 0, 0, 0.3)";
-        });
+
+
+        async function publishGame() {
+            if (!importedHtmlContent) return;
+
+            // UI Feedback
+            publishBtn.disabled = true;
+            publishBtn.textContent = "Publishing...";
+
+            try {
+                const response = await fetch("/publish-game", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({
+                        html_content: importedHtmlContent
+                    })
+                });
+
+                const data = await response.json();
+
+                if (!response.ok) {
+                    throw new Error(data.detail || "Publish failed");
+                }
+
+                // Update URL to the new server URL
+                generatedGameUrl = data.game_url;
+                const origin = window.location.origin;
+                const gamePath = generatedGameUrl.startsWith('/') ? generatedGameUrl : '/' + generatedGameUrl;
+                const fullUrl = `${origin}${gamePath}`;
+
+                // Update QR Code
+                generateQR(fullUrl);
+
+                // Update Download Link logic? The blob is still fine for "Save HTML", but now we have a real URL.
+                downloadLink.href = generatedGameUrl;
+
+                // Success Feedback
+                publishBtn.textContent = "✅ Published!";
+                status.textContent = "Game successfully published to cloud!";
+                status.style.color = "#ffd700";
+
+                // Hide publish button after a delay or keep as status
+                setTimeout(() => {
+                    publishBtn.style.display = "none";
+                }, 2000);
+
+            } catch (error) {
+                showError("Publish failed: " + error.message);
+                publishBtn.disabled = false;
+                publishBtn.textContent = "☁️ Publish Retry";
+            }
+        }
     </script>
 
 </body>

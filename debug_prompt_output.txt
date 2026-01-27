@@ -1,34 +1,26 @@
-def build_game_generation_prompt(user_prompt: str) -> str:
-    """
-    Builds a strict prompt for a shared leaderboard educational game with navigation.
-    """
-
-    final_prompt = f"""
 You are an expert educational game developer.
 Your task is to generate a COMPLETE, VALID, SELF-CONTAINED HTML FILE.
 
 - **SHARED LEADERBOARD**: The game MUST support a global shared leaderboard.
   - When the game finishes, prompt the user for their name if they are in the top scores.
-  - Use `fetch('/submit-score', ...)` to send `{{ game_id, player_name, score }}`.
-  - Use `fetch('/leaderboard/${{GAME_ID}}')` to retrieve the current top 10 scores.
+  - Use `fetch('/submit-score', ...)` to send `{ game_id, player_name, score }`.
+  - Use `fetch('/leaderboard/${GAME_ID}')` to retrieve the current top 10 scores.
   - IMPORTANT: Use a placeholder `const GAME_ID = "[[GAME_ID]]";` at the top of your script. This will be replaced by the server.
-  
-- **API BASE URL LOGIC (CRITICAL - MUST BE FIRST IN SCRIPT)**:
-  - The game might be played from a Blob URL (Imported) or `file://`.
-  - At the very top of your global script (before `gameState`), define:
-    ```javascript
-    const getApiBaseUrl = () => {{
-        const protocol = window.location.protocol;
-        if (protocol === 'blob:') return window.location.origin; // e.g. http://localhost:8000
-        if (protocol === 'file:') return 'http://localhost:8000'; // Fallback for local testing
-        return ''; // Use relative path for standard hosting
-    }};
-    const API_BASE = getApiBaseUrl();
-    ```
-  - **ALWAYS** prefix API calls with `API_BASE`.
-    - Example: `fetch(\`${{API_BASE}}/submit-score\`, ...)`
-    - Example: `fetch(\`${{API_BASE}}/leaderboard/${{GAME_ID}}\`)`
-
+  - **API BASE URL LOGIC (CRITICAL)**:
+    - The game might be played from a Blob URL (Imported) or `file://`.
+    - At the top of your script, define:
+      ```javascript
+      const getApiBaseUrl = () => {
+          const protocol = window.location.protocol;
+          if (protocol === 'blob:') return window.location.origin; // e.g. http://localhost:8000
+          if (protocol === 'file:') return 'http://localhost:8000'; // Fallback for local testing
+          return ''; // Use relative path for standard hosting
+      };
+      const API_BASE = getApiBaseUrl();
+      ```
+    - **ALWAYS** prefix API calls with `API_BASE`.
+      - Example: `fetch(\`${API_BASE}/submit-score\`, ...)`
+      - Example: `fetch(\`${API_BASE}/leaderboard/${GAME_ID}\`)`
 
 - **GAME STATE MANAGEMENT**:
   - Track `currentLevel` (1-based) and `totalLevels` (e.g., 3).
@@ -54,8 +46,8 @@ Your task is to generate a COMPLETE, VALID, SELF-CONTAINED HTML FILE.
         - *Example (Easy)*: Level 1 = "What is a cat?", Level 3 = "Identify a Siamese cat".
         - *Example (Hard)*: Level 1 = "Bio-mechanics of feline agility", Level 3 = "Evolutionary divergence of Panthera leo".
   - **INSTRUCTIONS TEXT**: In the "How to Play" section, **HARDCODE** the numbers.
-    - Write: "You have 15 seconds..." NOT "You have {{time}} seconds...".
-    - Write: "Score 70% to pass..." NOT "Score {{pct}}% to pass...".
+    - Write: "You have 15 seconds..." NOT "You have {time} seconds...".
+    - Write: "Score 70% to pass..." NOT "Score {pct}% to pass...".
     - Ensure these numbers match your Javascript logic.
 
 - **NAVIGATION & PROGRESSION**:
@@ -95,18 +87,18 @@ Your task is to generate a COMPLETE, VALID, SELF-CONTAINED HTML FILE.
     - Input: `<input id="playerName" type="text" placeholder="Enter Name">`
     - Button: `<button onclick="submitScore()">Submit Score</button>`
   - **Behave**:
-    - **Define a function `refreshLeaderboard()`** that fetches `\`${{API_BASE}}/leaderboard/${{GAME_ID}}\`` and renders the table.
+    - **Define a function `refreshLeaderboard()`** that fetches `\`${API_BASE}/leaderboard/${GAME_ID}\`` and renders the table.
       - **CRITICAL**: Use `try...catch`. If fetch fails, show "Leaderboard unavailable" in table, but **do NOT crash the game**.
     - **Call `refreshLeaderboard()`** inside `initGame()`.
       - **CRITICAL**: Ensure `initGame()` continues to setup UI/Listeners even if leaderboard fails (use `refreshLeaderboard().catch(...)` or `await` inside try/catch).
     - **On Submission Click**:
-      1. Call `fetch(\`${{API_BASE}}/submit-score\`, ...)` with JSON: `{{ "game_id": GAME_ID, "player_name": "Name", "score": 100 }}` (Ensure score is a Number!).
+      1. Call `fetch(\`${API_BASE}/submit-score\`, ...)` with JSON: `{ "game_id": GAME_ID, "player_name": "Name", "score": 100 }` (Ensure score is a Number!).
       2. If `response.ok` is FALSE: `alert("Error: " + await response.text());` (Show the REAL error).
       3. On Success: 
          - Disable button.
          - Show "Submitted!" text in **BRIGHT GREEN** (#00ff00).
          - Call `refreshLeaderboard()`.
-         - **SCROLL TO LEADERBOARD**: `document.getElementById('leaderboard-table').scrollIntoView({{ behavior: 'smooth' }});`
+         - **SCROLL TO LEADERBOARD**: `document.getElementById('leaderboard-table').scrollIntoView({ behavior: 'smooth' });`
     - **INPUT VISIBILITY**: The text input MUST have `background: #ffffff; color: #000000;` (Black text on White) for maximum readability.
     - **LEADERBOARD VISIBILITY**: The Leaderboard Table MUST be rendered on the Results screen, below the submission UI.
 
@@ -123,14 +115,14 @@ Your task is to generate a COMPLETE, VALID, SELF-CONTAINED HTML FILE.
 - **LOGIC & DATA INTEGRITY**:
   - **NO DUPLICATES**: Explicitly ensure all 4 answer options for a question are UNIQUE. No repeated questions.
   - **RANDOMIZE ANSWERS (CRITICAL)**: The `options` array MUST be shuffled in JavaScript before rendering. Do not always place the correct answer first. Use a Fisher-Yates shuffle or `sort(() => Math.random() - 0.5)`.
-  - **API CONTRACT**: `\`${{API_BASE}}/leaderboard/${{GAME_ID}}\`` returns a JSON ARRAY: `[{{ name: "Player", score: 100 }}, ...]`.
+  - **API CONTRACT**: `\`${API_BASE}/leaderboard/${GAME_ID}\`` returns a JSON ARRAY: `[{ name: "Player", score: 100 }, ...]`.
   - Handle empty leaderboard arrays gracefully (show "No scores yet").
   - **ERROR HANDLING**: Log fetch errors to console. If leaderboard fails, show specific error message.
 
 - **OPTIMIZATION & ARCHITECTURE**:
   - Use a "Question Generator Engine" (functions) instead of hardcoding massive data arrays.
   - Structure the code cleanly with a single `gameState` object.
-  - Example: `function generateQuestions(level) {{ ... return questions; }}`
+  - Example: `function generateQuestions(level) { ... return questions; }`
 
 **STRICT FORMATTING**: 
 1. Output ONLY raw HTML (no markdown).
@@ -138,18 +130,16 @@ Your task is to generate a COMPLETE, VALID, SELF-CONTAINED HTML FILE.
 4. **WRAP DATA STRINGS**: Use DOUBLE QUOTES `"` for all JSON keys and string values to prevent single-quote escaping errors (e.g. "It's" will break single quotes).
 5. **GLOBAL ERROR HANDLER**: Wrap `initGame()` in a try-catch block:
    ```javascript
-   try {{
+   try {
        initGame();
-   }} catch (e) {{
+   } catch (e) {
        console.error("Critical Init Error:", e);
        alert("Game Error: " + e.message);
-   }}
+   }
    ```
 6. Ensure `startGame()` is defined in the GLOBAL scope (not inside another function).
 
 USER GAME REQUEST:
-{user_prompt}
+Test Game
 
 CRITICAL: Return ONLY complete, valid HTML ending in </html>. No conversational filler.
-"""
-    return final_prompt.strip()

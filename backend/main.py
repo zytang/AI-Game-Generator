@@ -64,6 +64,8 @@ def get_gemini_client():
 
 class GameRequest(BaseModel):
     prompt: str
+    difficulty: str = "medium"
+    is_timed: bool = True
 
 
 @app.get("/", response_class=HTMLResponse)
@@ -93,8 +95,11 @@ def generate_game(request: GameRequest):
         raise HTTPException(status_code=400, detail="Prompt cannot be empty")
 
     try:
-        # Build strict prompt
-        full_prompt = build_game_generation_prompt(request.prompt)
+        # Build strict prompt with options
+        prompt_with_options = request.prompt
+        prompt_with_options += f"\n\n[OPTIONS]\nDifficulty: {request.difficulty}\nTimed Mode: {'YES' if request.is_timed else 'NO'}"
+        
+        full_prompt = build_game_generation_prompt(prompt_with_options)
 
         # Generate HTML from Gemini
         client = get_gemini_client()
@@ -106,6 +111,23 @@ def generate_game(request: GameRequest):
         # Inject Game ID for the shared leaderboard
         game_id = uuid.uuid4().hex
         clean_html = clean_html.replace("[[GAME_ID]]", game_id)
+
+        # Inject Metadata for Import/Edit features
+        import json
+        from datetime import datetime
+        metadata = {
+            "prompt": request.prompt,
+            "difficulty": request.difficulty,
+            "is_timed": request.is_timed,
+            "generated_at": datetime.now().isoformat()
+        }
+        # Securely serialize JSON and inject as a script tag
+        metadata_script = f'\n<!-- GENERATED METADATA -->\n<script id="game-metadata" type="application/json">\n{json.dumps(metadata, indent=2)}\n</script>'
+        
+        if "</body>" in clean_html:
+            clean_html = clean_html.replace("</body>", f"{metadata_script}\n</body>")
+        else:
+            clean_html += metadata_script
 
         # Save game file
         filename = f"game_{game_id}.html"
@@ -128,6 +150,57 @@ def generate_game(request: GameRequest):
 
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
+
+class PublishRequest(BaseModel):
+    html_content: str
+
+@app.post("/publish-game")
+def publish_game(request: PublishRequest):
+    try:
+        html_content = request.html_content
+        
+        # Basic validation
+        if "<!DOCTYPE html>" not in html_content:
+             raise HTTPException(status_code=400, detail="Invalid HTML content")
+
+        # Generate new ID for the published version
+        game_id = uuid.uuid4().hex
+        
+        # We might want to inject the NEW game_id into the HTML so the leaderboard works for this new URL?
+        # The imported game has the OLD game_id frozen in `const GAME_ID = "..."`.
+        # IF we don't update it, it will share the leaderboard with the original game.
+        # This is actually DESIRABLE (preserving history).
+        # However, if the user "forked" it effectively, maybe they want a new one?
+        # User said "publish it", enabling students to play. 
+        # If I import Game A (ID: 123), and publish it, it becomes Game B.
+        # If Game B keeps ID: 123, it writes to Leaderboard 123. This seems correct for "publishing" the same game.
+        # If I want a NEW leaderboard, I should regenerate.
+        # But wait, if I technically "publish" it, I am creating a new file `game_{new_id}.html`.
+        # If the JS inside says `const GAME_ID = "old_id"`, it will read/write to "old_id".
+        # This is fine. The files are just different access points to the same logic/data.
+        
+        # SAVE FILE
+        filename = f"game_{game_id}.html"
+        file_path = os.path.join(GENERATED_GAMES_DIR, filename)
+
+        with open(file_path, "w", encoding="utf-8") as f:
+            f.write(html_content)
+
+        # SAVE TO REDIS
+        try:
+            # 7 Days Retention (604800 seconds) for published games
+            kv_client.save_game(game_id, html_content, ttl=604800)
+            print(f"Published game saved to Redis: {game_id}")
+        except Exception as e:
+            print(f"Warning: Failed to save published game to Redis: {e}")
+
+        return JSONResponse({
+            "game_url": f"/games/{filename}",
+            "game_id": game_id
+        })
+
+    except Exception as e:
+         raise HTTPException(status_code=500, detail=str(e))
 
 class ScoreSubmission(BaseModel):
     game_id: str
